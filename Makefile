@@ -1,6 +1,6 @@
 TARGET   := puzzle_solver
 SRCDIR   := src
-OBJDIR   := bin
+OBJDIR   := build
 BINDIR   := bin
 
 CC       := gcc
