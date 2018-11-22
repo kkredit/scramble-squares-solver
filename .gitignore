@@ -1,0 +1,6 @@
+# vim artifacts
+*.un~
+
+# build artifacts
+build/
+bin/
