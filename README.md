@@ -10,7 +10,10 @@ figured it wouldn't be hard for a computer...
 
 The puzzle is a "Scramble Squares" type of puzzle. You can find it
 [here](https://www.puzzlewarehouse.com/Insects-10028ss.html) and
-[here](https://www.amazon.com/B-Dazzle-10028-Scramble-Squares-Insects/dp/B000021Z0S).
+[here](https://www.amazon.com/B-Dazzle-10028-Scramble-Squares-Insects/dp/B000021Z0S). The idea is
+that each touching edge must have a complete insect. For example, if you have the head of a beetle
+pointing up on the left piece, you must have the abdomen of a beetle pointing down on the right
+piece. Edges on the outer edge of the entire puzzle do not matter.
 
 Here's a picture of what it looks like unsolved:
 
