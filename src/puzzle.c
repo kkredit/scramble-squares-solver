@@ -25,7 +25,7 @@ typedef edge_t piece_t[4];
  *    4       2
  *      edge 3
  */
- 
+
 const piece_t pieces_set[9] = {
     {DRAGONFLY_TAIL, ANT_HEAD, BEETLE_TAIL, MANTIS_HEAD},
     {DRAGONFLY_TAIL, ANT_TAIL, BEETLE_HEAD, MANTIS_TAIL},
@@ -83,7 +83,7 @@ void recursive_check(board_t board){
     //          print solution_num
     //      else
     //          recur next level
-    
+
     // Determine the legal next moves
     bool next_moves[9] = {true, true, true, true, true, true, true, true, true};
     unsigned moves_left = 9;
@@ -93,7 +93,7 @@ void recursive_check(board_t board){
             moves_left--;
         }
     }
-    
+
     // For each possible move
     for(unsigned index = 0; index < 9; index++){
         // If legal
@@ -126,74 +126,74 @@ bool board_is_legal(board_t board){
     // Vertical edge matching checks
     if(-1 != board[0].set_index
        && -1 != board[1].set_index
-       && (pieces_set[board[0].set_index][(1 + board[0].rotation) % 4] 
+       && (pieces_set[board[0].set_index][(1 + board[0].rotation) % 4]
            != -pieces_set[board[1].set_index][(3 + board[1].rotation) % 4])){
         return false;
     }
     if(-1 != board[1].set_index
        && -1 != board[2].set_index
-       && (pieces_set[board[1].set_index][(1 + board[1].rotation) % 4] 
+       && (pieces_set[board[1].set_index][(1 + board[1].rotation) % 4]
            != -pieces_set[board[2].set_index][(3 + board[2].rotation) % 4])){
         return false;
     }
     if(-1 != board[3].set_index
        && -1 != board[4].set_index
-       && (pieces_set[board[3].set_index][(1 + board[3].rotation) % 4] 
+       && (pieces_set[board[3].set_index][(1 + board[3].rotation) % 4]
            != -pieces_set[board[4].set_index][(3 + board[4].rotation) % 4])){
         return false;
     }
     if(-1 != board[4].set_index
        && -1 != board[5].set_index
-       && (pieces_set[board[4].set_index][(1 + board[4].rotation) % 4] 
+       && (pieces_set[board[4].set_index][(1 + board[4].rotation) % 4]
            != -pieces_set[board[5].set_index][(3 + board[5].rotation) % 4])){
         return false;
     }
     if(-1 != board[6].set_index
        && -1 != board[7].set_index
-       && (pieces_set[board[6].set_index][(1 + board[6].rotation) % 4] 
+       && (pieces_set[board[6].set_index][(1 + board[6].rotation) % 4]
            != -pieces_set[board[7].set_index][(3 + board[7].rotation) % 4])){
         return false;
     }
     if(-1 != board[7].set_index
        && -1 != board[8].set_index
-       && (pieces_set[board[7].set_index][(1 + board[7].rotation) % 4] 
+       && (pieces_set[board[7].set_index][(1 + board[7].rotation) % 4]
            != -pieces_set[board[8].set_index][(3 + board[8].rotation) % 4])){
         return false;
     }
     // Horizontal edge matching checks
     if(-1 != board[0].set_index
        && -1 != board[3].set_index
-       && (pieces_set[board[0].set_index][(2 + board[0].rotation) % 4] 
+       && (pieces_set[board[0].set_index][(2 + board[0].rotation) % 4]
            != -pieces_set[board[3].set_index][(0 + board[3].rotation) % 4])){
         return false;
     }
     if(-1 != board[1].set_index
        && -1 != board[4].set_index
-       && (pieces_set[board[1].set_index][(2 + board[1].rotation) % 4] 
+       && (pieces_set[board[1].set_index][(2 + board[1].rotation) % 4]
            != -pieces_set[board[4].set_index][(0 + board[4].rotation) % 4])){
         return false;
     }
     if(-1 != board[2].set_index
        && -1 != board[5].set_index
-       && (pieces_set[board[2].set_index][(2 + board[2].rotation) % 4] 
+       && (pieces_set[board[2].set_index][(2 + board[2].rotation) % 4]
            != -pieces_set[board[5].set_index][(0 + board[5].rotation) % 4])){
         return false;
     }
     if(-1 != board[3].set_index
        && -1 != board[6].set_index
-       && (pieces_set[board[3].set_index][(2 + board[3].rotation) % 4] 
+       && (pieces_set[board[3].set_index][(2 + board[3].rotation) % 4]
            != -pieces_set[board[6].set_index][(0 + board[6].rotation) % 4])){
         return false;
     }
     if(-1 != board[4].set_index
        && -1 != board[7].set_index
-       && (pieces_set[board[4].set_index][(2 + board[4].rotation) % 4] 
+       && (pieces_set[board[4].set_index][(2 + board[4].rotation) % 4]
            != -pieces_set[board[7].set_index][(0 + board[7].rotation) % 4])){
         return false;
     }
     if(-1 != board[5].set_index
        && -1 != board[8].set_index
-       && (pieces_set[board[5].set_index][(2 + board[5].rotation) % 4] 
+       && (pieces_set[board[5].set_index][(2 + board[5].rotation) % 4]
            != -pieces_set[board[8].set_index][(0 + board[8].rotation) % 4])){
         return false;
     }
@@ -202,10 +202,7 @@ bool board_is_legal(board_t board){
 }
 
 void print_board(board_t board, bool is_solution){
-    //static unsigned solution_num = 0;
     if(is_solution){
-        //solution_num++;
-        //printf("\nSOLUTION %u:\n", solution_num);
         printf("\nSOLUTION\n");
     }
     printf("%d:%d  %d:%d  %d:%d\n%d:%d  %d:%d  %d:%d\n%d:%d  %d:%d  %d:%d\n\n",
