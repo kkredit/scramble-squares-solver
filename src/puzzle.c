@@ -114,8 +114,6 @@ void recursive_check(board_t board){
                         recursive_check(board_copy);
                     }
                 }
-                else {
-                }
             }
         }
     }
