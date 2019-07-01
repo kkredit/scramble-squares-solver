@@ -1,8 +1,21 @@
+/**
+ * \file puzzle.c
+ *
+ * \brief Solves a scramble-squares puzzle
+ *
+ * \copyright Copyright (c) 2019, Kevin Kredit.
+ */
 
+
+/******************************************************************************
+ *                                                                 Inclusions */
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
 
+
+/******************************************************************************
+ *                                                                      Types */
 typedef enum edge_e {
     ANT_HEAD        = 1,
     ANT_TAIL        = -1,
@@ -14,8 +27,6 @@ typedef enum edge_e {
     MANTIS_TAIL     = -4
 } edge_t;
 
-typedef edge_t piece_t[4];
-
 /* Piece
  *      edge 1
  *    e       e
@@ -25,7 +36,31 @@ typedef edge_t piece_t[4];
  *    4       2
  *      edge 3
  */
+typedef edge_t piece_t[4];
 
+
+typedef struct placed_piece_s {
+    int         set_index;
+    int         rotation;
+} placed_piece_t;
+
+/* Board
+ *    1 2 3
+ *    4 5 6
+ *    7 8 9
+ */
+typedef placed_piece_t board_t[9];
+
+
+/******************************************************************************
+ *                                                      Function declarations */
+bool board_is_legal(board_t board);
+void print_board(board_t board, bool is_solution);
+void recursive_check(board_t board);
+
+
+/******************************************************************************
+ *                                                                       Data */
 const piece_t pieces_set[9] = {
     {DRAGONFLY_TAIL, ANT_HEAD, BEETLE_TAIL, MANTIS_HEAD},
     {DRAGONFLY_TAIL, ANT_TAIL, BEETLE_HEAD, MANTIS_TAIL},
@@ -38,27 +73,13 @@ const piece_t pieces_set[9] = {
     {BEETLE_TAIL, MANTIS_TAIL, ANT_HEAD, BEETLE_HEAD},
 };
 
-/* Board
- *    1 2 3
- *    4 5 6
- *    7 8 9
- */
-
-typedef struct placed_piece_s {
-    int         set_index;
-    int         rotation;
-} placed_piece_t;
-
-typedef placed_piece_t board_t[9];
-
 unsigned long num_boards_checked = 0;
 
-bool board_is_legal(board_t board);
-void print_board(board_t board, bool is_solution);
-void recursive_check(board_t board);
 
-int main(){
-    printf("Working on the solution to the puzzle...\n");
+/******************************************************************************
+ *                                                         External functions */
+int main(void) {
+
     board_t board = {
         {-1, 0},
         {-1, 0},
@@ -70,11 +91,17 @@ int main(){
         {-1, 0},
         {-1, 0},
     };
+
+    printf("Working on the solution to the puzzle...\n");
     recursive_check(board);
     printf("Checked %lu boards\n", num_boards_checked);
+
     return 0;
 }
 
+
+/******************************************************************************
+ *                                                         Internal functions */
 void recursive_check(board_t board){
     // Each level of recursion adds each possible next piece
     // after adding, check for legal state
@@ -86,8 +113,8 @@ void recursive_check(board_t board){
 
     // Determine the legal next moves
     bool next_moves[9] = {true, true, true, true, true, true, true, true, true};
-    unsigned moves_left = 9;
-    for(unsigned i = 0; i < 9; i++){
+    int moves_left = 9;
+    for(int i = 0; i < 9; i++){
         if(-1 != board[i].set_index){
             next_moves[board[i].set_index] = false;
             moves_left--;
@@ -95,11 +122,11 @@ void recursive_check(board_t board){
     }
 
     // For each possible move
-    for(unsigned index = 0; index < 9; index++){
+    for(int index = 0; index < 9; index++){
         // If legal
         if(next_moves[index]){
             // For each rotation
-            for(unsigned rot_pos = 0; rot_pos < 4; rot_pos++){
+            for(int rot_pos = 0; rot_pos < 4; rot_pos++){
                 // Add to board, check if legal, follow logic outlined above
                 // RETURN ONLY IF IS COMPELTE DEAD END
                 board[9 - moves_left].set_index = index;
@@ -214,3 +241,4 @@ void print_board(board_t board, bool is_solution){
            board[7].set_index, board[7].rotation,
            board[8].set_index, board[8].rotation);
 }
+
