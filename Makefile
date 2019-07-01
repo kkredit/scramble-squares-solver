@@ -2,10 +2,23 @@
 # Generic C Makefile
 # ------------------------------------------------
 
-TARGET   := prog
+CC=gcc
+CXX=g++
+
+EXENAME  := prog
 SRCDIR   := src
-OBJDIR   := bin
-BINDIR   := bin
+BUILDDIR := build
+
+vpath %.c $(dir $(SRCDIR))
+vpath %.cpp $(dir $(SRCDIR))
+
+EXEFILE  := $(BUILDDIR)/$(EXENAME)
+SOURCES  := $(wildcard $(SRCDIR)/*.c)
+OBJECTS  := $(patsubst %.c,$(BUILDDIR)/%.o,$(patsubst %.cpp,$(BUILDDIR)/%.o,$(notdir $(SOURCES))))
+INCLUDES := $(SRCDIR)
+INC_DIRS := $(foreach incdir,$(INCLUDES),-I$(incdir))
+GCOVGCNO:=$(patsubst %.o,$(BUILDDIR)/%.gcno,$(notdir $(OBJS)))
+GCOVGCDA:=$(patsubst %.o,$(BUILDDIR)/%.gcda,$(notdir $(OBJS)))
 
 WARNINGS := \
 	-Wall -Wextra -Wpedantic -Werror \
@@ -18,30 +31,36 @@ WARNINGS := \
 	-Wmissing-declarations -Wundef -fstrict-aliasing -Wstrict-aliasing=3 \
 	-Wformat=2 -Wsuggest-attribute=pure -Wsuggest-attribute=const
 
-CC       := gcc
-CFLAGS   := -std=c99 $(WARNINGS) -I.
+CFLAGS += -std=c99 -D_POSIX_C_SOURCE=200112L -O0 -ggdb3 $(WARNINGS) $(INC_DIRS)
+LFLAGS += $(WARNINGS) $(INC_DIRS)
 
-LINKER   := gcc
-LFLAGS   := $(WARNINGS) -I.
-
-SOURCES  := $(wildcard $(SRCDIR)/*.c)
-INCLUDES := $(wildcard $(SRCDIR)/*.h)
-OBJECTS  := $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SOURCES))
-
-.PHONY: all clean compile
 default: all
+.PHONY: all
+all:
+	$(MAKE) $(EXEFILE) -j $(shell nproc)
 
-all: $(BINDIR)/$(TARGET)
+.PHONY: coverage
+coverage:
+	CFLAGS=--coverage $(MAKE) $(EXEFILE) -j $(shell nproc)
+	./$(EXEFILE)
+	lcov -c -d . -o $(EXEFILE).info
+	genhtml --legend -o $(BUILDDIR)/coveragereport $(EXEFILE).info
 
-compile: $(OBJECTS)
+$(EXEFILE): $(OBJECTS)
+	$(CXX) -o $@ $(CFLAGS) $^ $(LFLAGS)
 
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c
+	$(CC) -c -o $@ $(CFLAGS) $< $(LFLAGS)
+
+$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
+	$(CXX) -c -o $@ $(CFLAGS) $< $(LFLAGS)
+
+$(OBJECTS): | $(BUILDDIR)
+
+$(BUILDDIR):
+	mkdir $(BUILDDIR)
+
+.PHONY: clean
 clean:
-	rm -f $(OBJECTS) $(BINDIR)/$(TARGET)
-
-$(BINDIR)/$(TARGET): $(OBJECTS)
-	mkdir -p $(BINDIR)
-	$(LINKER) $(OBJECTS) $(LFLAGS) -o $@
-
-$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
-	mkdir -p $(OBJDIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(RM) $(EXEFILE) $(OBJECTS) $(GCOVGCNO) $(GCOVGCDA) $(EXEFILE).info
+	$(RM) -r $(BUILDDIR)/coveragereport
