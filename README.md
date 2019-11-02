@@ -3,8 +3,8 @@
 
 A couple years ago I spent Thanksgiving at a friend's house. They had this puzzle sitting on the
 table and it looked pretty simple--just arrange these pieces so all the shapes line up. I spent
-hours with it, and got within one piece about ten different ways, but could never solve it! I
-figured it wouldn't be hard for a computer though...
+hours with it, and got within one piece about ten different ways, but could never solve it. I
+figured it wouldn't be hard for a computer though, and got to work.
 
 # The Puzzle
 
