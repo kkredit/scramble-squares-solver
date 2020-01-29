@@ -67,18 +67,28 @@ func (pieces *PieceSet) pop(index int) (Piece, error) {
 	if (index >= len(*pieces)) {
 		return Piece{}, errors.New("Index is out of range")
 	}
-	fmt.Println("Popping:", index, "from Set:", (*pieces))
+	// fmt.Println("Popping:", index, "from Set:", (*pieces))
 	// Get desired piece
 	p := (*pieces)[index]
 	// Swap back piece to index and truncate
 	// (*pieces)[index] = (*pieces)[len(*pieces)-1]
 	// *pieces = (*pieces)[:len(*pieces)-1]
-	// *pieces = append((*pieces)[:index], (*pieces)[index+1:]...)
-	copy((*pieces)[index:], (*pieces)[index+1:])
-	(*pieces)[len(*pieces)-1] = Piece{}
-	(*pieces) = (*pieces)[:len(*pieces)-1]
-	fmt.Println("Set after:          ", (*pieces))
+	*pieces = append((*pieces)[:index], (*pieces)[index+1:]...)
+	// copy((*pieces)[index:], (*pieces)[index+1:])
+	// (*pieces)[len(*pieces)-1] = Piece{}
+	// (*pieces) = (*pieces)[:len(*pieces)-1]
+	// fmt.Println("Set after:          ", (*pieces))
     return p, nil
+}
+
+func (b *Board) newCopy() Board {
+	var c = Board{
+		make([]PlacedPiece,	len(b.placedPieces)),
+		make(PieceSet, len(b.unplacedPieces)),
+	}
+	copy(c.placedPieces, b.placedPieces)
+	copy(c.unplacedPieces, b.unplacedPieces)
+	return c
 }
 
 func (b *Board) placePiece(index int, rot int) {
@@ -116,25 +126,24 @@ func (b *Board) isValid() bool {
 	return true
 }
 
-// // Piece set
-// var Set = Board{
-// 	{}
-// 	{P1, P2, P3, P4, P5, P6, P7, P8, P9}
-// }
-
 func (b *Board) findSolution() {
 	for index := range b.unplacedPieces {
 		for rot := 0; rot < 4; rot++ {
-			next := *b
+			// next := *b
+			next := b.newCopy()
+			// fmt.Println("Old board:", &(b.unplacedPieces[0][0]))
+			// fmt.Println("New board:", &(next.unplacedPieces[0][0]))
+			// fmt.Println("Old board:", b)
+			// fmt.Println("New board:", next)
 			next.placePiece(index, rot)
 			if next.isValid() {
 				if len(next.unplacedPieces) == 0 {
 					fmt.Println("Found a solution!\n", next.placedPieces)
 				} else {
-					if len(next.unplacedPieces) < 5 {
-						fmt.Println("Getting close,", len(next.unplacedPieces), "left")
-						fmt.Println("Progress:\n\t", next.placedPieces)
-					}
+					// if len(next.unplacedPieces) < 2 {
+					// 	fmt.Println("Getting close,", len(next.unplacedPieces), "left")
+					// 	fmt.Println("Progress:\n\t", next.placedPieces)
+					// }
 					next.findSolution()
 				}
 			}
