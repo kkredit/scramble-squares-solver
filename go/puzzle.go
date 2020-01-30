@@ -8,6 +8,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"sync"
 )
 
 // Edges, pieces, and boards
@@ -101,19 +102,29 @@ func (b *Board) isValid() bool {
 	return true
 }
 
-func (b *Board) findSolution() {
+func (b *Board) findSolution(initIndex int) {
 	for index := range b.unplacedPieces {
 		for rot := 0; rot < 4; rot++ {
 			next := b.newCopy()
 			next.placePiece(index, rot)
 			if next.isValid() {
 				if len(next.unplacedPieces) == 0 {
-					fmt.Println("Found a solution!\n", next.placedPieces)
+					fmt.Println("Thread", initIndex, "found a solution!\n", next.placedPieces)
 				} else {
-					next.findSolution()
+					next.findSolution(initIndex)
 				}
 			}
 		}
+	}
+}
+
+func (b *Board) startWithIndex(index int, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	for rot := 0; rot < 4; rot++ {
+		next := b.newCopy()
+		next.placePiece(index, rot)
+		next.findSolution(index)
 	}
 }
 
@@ -134,5 +145,12 @@ func main() {
 	}
 
 	fmt.Println("Working on a solution!")
-	board.findSolution()
+
+	var wg sync.WaitGroup
+	for i := range board.unplacedPieces {
+		wg.Add(1)
+		go board.startWithIndex(i, &wg)
+	}
+
+	wg.Wait()
 }
