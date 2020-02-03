@@ -11,98 +11,81 @@ import (
 	"sync"
 )
 
-// Edges, pieces, and boards
-type Edge int
-
-func (e Edge) matches(e2 Edge) bool {
-	return e == -e2
-}
-
-const (
-	Ant Edge = 1 + iota
-	Beetle
-	Dragonfly
-	Mantis
-)
-
-type Piece [4]Edge
-
-// Boards
-type PlacedPiece struct {
-	piece    Piece
+////////////////////////////////////////////////////////////////////////////////
+//																		Types //
+type edge int
+type piece [4]edge
+type pieceSet []piece
+type placedPiece struct {
+	piece    piece
 	rotation int // Clockwise 90 deg rotations
 }
+type board struct {
+	placedPieces   []placedPiece
+	unplacedPieces pieceSet
+}
+type position int
 
-type Position int
-
+////////////////////////////////////////////////////////////////////////////////
+//																	   Consts //
 const (
-	Top Position = iota
-	Right
-	Bottom
-	Left
+	ant edge = 1 + iota
+	beetle
+	dragonfly
+	mantis
 )
 
-func (pp *PlacedPiece) getEdge(po Position) Edge {
-	return pp.piece[(4+int(po)-pp.rotation)%4]
-}
+const (
+	top position = iota
+	right
+	bottom
+	left
+)
 
-type PieceSet []Piece
-
-type Board struct {
-	placedPieces   []PlacedPiece
-	unplacedPieces PieceSet
-}
-
-func (pieces *PieceSet) pop(index int) (Piece, error) {
-	if index >= len(*pieces) {
-		return Piece{}, errors.New("Index is out of range")
+////////////////////////////////////////////////////////////////////////////////
+//																    Functions //
+func main() {
+	var board = board{
+		[]placedPiece{},
+		pieceSet{
+			piece{-dragonfly, ant, -beetle, mantis},
+			piece{-dragonfly, -ant, beetle, -mantis},
+			piece{-dragonfly, mantis, -beetle, ant},
+			piece{-dragonfly, ant, mantis, -ant},
+			piece{-dragonfly, ant, beetle, mantis},
+			piece{dragonfly, -beetle, mantis, -ant},
+			piece{dragonfly, -mantis, beetle, -ant},
+			piece{dragonfly, mantis, beetle, -dragonfly},
+			piece{-beetle, -mantis, ant, beetle},
+		},
 	}
-	// Get desired piece, then cut it out of slice
-	p := (*pieces)[index]
-	*pieces = append((*pieces)[:index], (*pieces)[index+1:]...)
-	return p, nil
+
+	fmt.Println("Working on a solution!")
+
+	var wg sync.WaitGroup
+	for i := range board.unplacedPieces {
+		wg.Add(1)
+		go board.startWithIndex(i, &wg)
+	}
+
+	wg.Wait()
 }
 
-func (b *Board) newCopy() Board {
-	var c = Board{
-		make([]PlacedPiece, len(b.placedPieces)),
-		make(PieceSet, len(b.unplacedPieces)),
-	}
-	copy(c.placedPieces, b.placedPieces)
-	copy(c.unplacedPieces, b.unplacedPieces)
-	return c
-}
+////////////////////////////////////////////////////////////////////////////////
+//																      Methods //
 
-func (b *Board) placePiece(index int, rot int) {
-	if p, err := b.unplacedPieces.pop(index); err == nil {
-		b.placedPieces = append(b.placedPieces, PlacedPiece{p, rot})
-	} else {
-		panic(err)
+// Methods on boards
+func (b *board) startWithIndex(index int, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	for rot := 0; rot < 4; rot++ {
+		next := b.newCopy()
+		next.placePiece(index, rot)
+		next.findSolution(index)
 	}
 }
 
-func (b *Board) isValid() bool {
-	// Assume all but latest piece have been checked
-	index := len(b.placedPieces) - 1
-	piece := b.placedPieces[index]
-	if index%3 != 0 {
-		// Check left edge
-		leftPiece := b.placedPieces[index-1]
-		if !piece.getEdge(Left).matches(leftPiece.getEdge(Right)) {
-			return false
-		}
-	}
-	if index >= 3 {
-		// Check upper edge
-		abovePiece := b.placedPieces[index-3]
-		if !piece.getEdge(Top).matches(abovePiece.getEdge(Bottom)) {
-			return false
-		}
-	}
-	return true
-}
-
-func (b *Board) findSolution(initIndex int) {
+func (b *board) findSolution(initIndex int) {
 	for index := range b.unplacedPieces {
 		for rot := 0; rot < 4; rot++ {
 			next := b.newCopy()
@@ -118,39 +101,62 @@ func (b *Board) findSolution(initIndex int) {
 	}
 }
 
-func (b *Board) startWithIndex(index int, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (b *board) newCopy() board {
+	var c = board{
+		make([]placedPiece, len(b.placedPieces)),
+		make(pieceSet, len(b.unplacedPieces)),
+	}
+	copy(c.placedPieces, b.placedPieces)
+	copy(c.unplacedPieces, b.unplacedPieces)
+	return c
+}
 
-	for rot := 0; rot < 4; rot++ {
-		next := b.newCopy()
-		next.placePiece(index, rot)
-		next.findSolution(index)
+func (b *board) placePiece(index int, rot int) {
+	if p, err := b.unplacedPieces.pop(index); err == nil {
+		b.placedPieces = append(b.placedPieces, placedPiece{p, rot})
+	} else {
+		panic(err)
 	}
 }
 
-func main() {
-	var board = Board{
-		[]PlacedPiece{},
-		PieceSet{
-			Piece{-Dragonfly, Ant, -Beetle, Mantis},
-			Piece{-Dragonfly, -Ant, Beetle, -Mantis},
-			Piece{-Dragonfly, Mantis, -Beetle, Ant},
-			Piece{-Dragonfly, Ant, Mantis, -Ant},
-			Piece{-Dragonfly, Ant, Beetle, Mantis},
-			Piece{Dragonfly, -Beetle, Mantis, -Ant},
-			Piece{Dragonfly, -Mantis, Beetle, -Ant},
-			Piece{Dragonfly, Mantis, Beetle, -Dragonfly},
-			Piece{-Beetle, -Mantis, Ant, Beetle},
-		},
+func (b *board) isValid() bool {
+	// Assume all but latest piece have been checked
+	index := len(b.placedPieces) - 1
+	piece := b.placedPieces[index]
+	if index%3 != 0 {
+		// Check left edge
+		leftPiece := b.placedPieces[index-1]
+		if !piece.getedge(left).matches(leftPiece.getedge(right)) {
+			return false
+		}
 	}
-
-	fmt.Println("Working on a solution!")
-
-	var wg sync.WaitGroup
-	for i := range board.unplacedPieces {
-		wg.Add(1)
-		go board.startWithIndex(i, &wg)
+	if index >= 3 {
+		// Check upper edge
+		abovePiece := b.placedPieces[index-3]
+		if !piece.getedge(top).matches(abovePiece.getedge(bottom)) {
+			return false
+		}
 	}
+	return true
+}
 
-	wg.Wait()
+// Methods on pieceSets
+func (pieces *pieceSet) pop(index int) (piece, error) {
+	if index >= len(*pieces) {
+		return piece{}, errors.New("Index is out of range")
+	}
+	// Get desired piece, then cut it out of slice
+	p := (*pieces)[index]
+	*pieces = append((*pieces)[:index], (*pieces)[index+1:]...)
+	return p, nil
+}
+
+// Methods on placedPieces
+func (pp *placedPiece) getedge(po position) edge {
+	return pp.piece[(4+int(po)-pp.rotation)%4]
+}
+
+// Methods on edges
+func (e edge) matches(e2 edge) bool {
+	return e == -e2
 }
