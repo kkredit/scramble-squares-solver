@@ -6,7 +6,7 @@ CC=gcc
 CXX=g++
 
 EXENAME  := prog
-SRCDIR   := src
+SRCDIR   := .
 BUILDDIR := build
 
 vpath %.c $(dir $(SRCDIR))
