@@ -11,30 +11,27 @@ main = putStrLn $ "Solution: " ++ showBoard findSolution
 
 data End = Tail | Head deriving (Eq, Show)
 data Edge = Ant End | Beetle End | Dragonfly End | Mantis End deriving (Eq, Show)
-data Piece = Piece String Edge Edge Edge Edge deriving (Eq, Show)
+data Piece = Piece { name :: String, edges :: [Edge] } deriving (Eq, Show)
 type Rotation = Int
 type Board = [(Piece, Rotation)]
 type SetOfPieces = [Piece]
 
 findSolution :: Board
 findSolution = solution ([], [
-    makePiece 1 (Dragonfly Tail) (Ant Head) (Beetle Tail) (Mantis Head),
-    makePiece 2 (Dragonfly Tail) (Ant Tail) (Beetle Head) (Mantis Tail),
-    makePiece 3 (Dragonfly Tail) (Mantis Head) (Beetle Tail) (Ant Head),
-    makePiece 4 (Dragonfly Tail) (Ant Head) (Mantis Head) (Ant Tail),
-    makePiece 5 (Dragonfly Tail) (Ant Head) (Beetle Head) (Mantis Head),
-    makePiece 6 (Dragonfly Head) (Beetle Tail) (Mantis Head) (Ant Tail),
-    makePiece 7 (Dragonfly Head) (Mantis Tail) (Beetle Head) (Ant Tail),
-    makePiece 8 (Dragonfly Head) (Mantis Head) (Beetle Head) (Dragonfly Tail),
-    makePiece 9 (Beetle Tail) (Mantis Tail) (Ant Head) (Beetle Head)
+    Piece{name = "1", edges = [Dragonfly Tail, Ant Head, Beetle Tail, Mantis Head]},
+    Piece{name = "2", edges = [Dragonfly Tail, Ant Tail, Beetle Head, Mantis Tail]},
+    Piece{name = "3", edges = [Dragonfly Tail, Mantis Head, Beetle Tail, Ant Head]},
+    Piece{name = "4", edges = [Dragonfly Tail, Ant Head, Mantis Head, Ant Tail]},
+    Piece{name = "5", edges = [Dragonfly Tail, Ant Head, Beetle Head, Mantis Head]},
+    Piece{name = "6", edges = [Dragonfly Head, Beetle Tail, Mantis Head, Ant Tail]},
+    Piece{name = "7", edges = [Dragonfly Head, Mantis Tail, Beetle Head, Ant Tail]},
+    Piece{name = "8", edges = [Dragonfly Head, Mantis Head, Beetle Head, Dragonfly Tail]},
+    Piece{name = "9", edges = [Beetle Tail, Mantis Tail, Ant Head, Beetle Head]}
   ])
-
-makePiece :: Int -> Edge -> Edge -> Edge -> Edge -> Piece
-makePiece n = Piece (show n)
 
 showBoard :: Board -> String
 showBoard b = foldl (\acc p -> acc ++ showPiece p) "" b
-  where showPiece ((Piece name _ _ _ _), r) = name ++ "," ++ show r ++ " "
+  where showPiece (p, r) = name p ++ "," ++ show r ++ " "
 
 solution :: (Board, SetOfPieces) -> Board
 solution (b, s)
