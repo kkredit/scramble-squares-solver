@@ -50,3 +50,10 @@ boardIsLegal b
         leftCol = pos `mod` 3 == 1
         matchesAbove = True
         matchesLeft = True
+
+edgesMatch :: Edge -> Edge -> Bool
+edgesMatch (Ant e1) (Ant e2) = e1 /= e2
+edgesMatch (Beetle e1) (Beetle e2) = e1 /= e2
+edgesMatch (Dragonfly e1) (Dragonfly e2) = e1 /= e2
+edgesMatch (Mantis e1) (Mantis e2) = e1 /= e2
+edgesMatch _ _= False
