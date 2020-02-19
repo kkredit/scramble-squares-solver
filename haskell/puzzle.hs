@@ -7,33 +7,49 @@ module Main
   where
 
 main :: IO ()
-main = putStrLn $ "Solution: " ++ show findSolution
+main = putStrLn $ "Solution: " ++ showBoard findSolution
 
 data End = Tail | Head deriving (Eq, Show)
-data Insect = Ant | Beetle | Dragonfly | Mantis deriving (Eq, Show)
-data Edge = Edge { insect :: Insect, end :: End } deriving (Eq, Show)
-data Piece = Piece Edge Edge Edge Edge deriving (Eq, Show)
-type Board = [Piece]
+data Edge = Ant End | Beetle End | Dragonfly End | Mantis End deriving (Eq, Show)
+data Piece = Piece String Edge Edge Edge Edge deriving (Eq, Show)
+type Rotation = Int
+type Board = [(Piece, Rotation)]
 type SetOfPieces = [Piece]
 
 findSolution :: Board
-findSolution = solution [] [
-    makePiece Dragonfly Tail Ant Head Beetle Tail Mantis Head,
-    makePiece Dragonfly Tail Ant Tail Beetle Head Mantis Tail,
-    makePiece Dragonfly Tail Mantis Head Beetle Tail Ant Head,
-    makePiece Dragonfly Tail Ant Head Mantis Head Ant Tail,
-    makePiece Dragonfly Tail Ant Head Beetle Head Mantis Head,
-    makePiece Dragonfly Head Beetle Tail Mantis Head Ant Tail,
-    makePiece Dragonfly Head Mantis Tail Beetle Head Ant Tail,
-    makePiece Dragonfly Head Mantis Head Beetle Head Dragonfly Tail,
-    makePiece Beetle Tail Mantis Tail Ant Head Beetle Head
-  ]
+findSolution = solution ([], [
+    makePiece 1 (Dragonfly Tail) (Ant Head) (Beetle Tail) (Mantis Head),
+    makePiece 2 (Dragonfly Tail) (Ant Tail) (Beetle Head) (Mantis Tail),
+    makePiece 3 (Dragonfly Tail) (Mantis Head) (Beetle Tail) (Ant Head),
+    makePiece 4 (Dragonfly Tail) (Ant Head) (Mantis Head) (Ant Tail),
+    makePiece 5 (Dragonfly Tail) (Ant Head) (Beetle Head) (Mantis Head),
+    makePiece 6 (Dragonfly Head) (Beetle Tail) (Mantis Head) (Ant Tail),
+    makePiece 7 (Dragonfly Head) (Mantis Tail) (Beetle Head) (Ant Tail),
+    makePiece 8 (Dragonfly Head) (Mantis Head) (Beetle Head) (Dragonfly Tail),
+    makePiece 9 (Beetle Tail) (Mantis Tail) (Ant Head) (Beetle Head)
+  ])
 
-makePiece :: Insect -> End -> Insect -> End -> Insect -> End -> Insect -> End -> Piece
-makePiece i1 e1 i2 e2 i3 e3 i4 e4 = Piece (Edge i1 e1) (Edge i2 e2) (Edge i3 e3) (Edge i4 e4)
+makePiece :: Int -> Edge -> Edge -> Edge -> Edge -> Piece
+makePiece n = Piece (show n)
 
-solution :: Board -> SetOfPieces -> Board
-solution b s
+showBoard :: Board -> String
+showBoard b = foldl (\acc p -> acc ++ showPiece p) "" b
+  where showPiece ((Piece name _ _ _ _), r) = name ++ "," ++ show r ++ " "
+
+solution :: (Board, SetOfPieces) -> Board
+solution (b, s)
   | length b == 9 = b
   | otherwise =
-      s
+      head [ solution (nb, ns) | (nb, ns) <- nextBoards, boardIsLegal nb ]
+  where nextBoards = [(b, s)]
+
+-- Only check latest piece
+boardIsLegal :: Board -> Bool
+boardIsLegal b
+  | pos < 2 = True
+  | otherwise = (topRow || matchesAbove) && (leftCol || matchesLeft)
+  where pos = length b
+        topRow = pos < 4
+        leftCol = pos `mod` 3 == 1
+        matchesAbove = True
+        matchesLeft = True
