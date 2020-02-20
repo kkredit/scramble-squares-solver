@@ -24,6 +24,7 @@ data Piece = Piece {
   } deriving (Eq, Show)
 type Board = [Piece]
 type SetOfPieces = [Piece]
+type State = (Board, SetOfPieces)
 
 findSolution :: Board
 findSolution = solution ([], [
@@ -48,16 +49,15 @@ showBoard :: Board -> String
 showBoard b = foldl (\acc p -> acc ++ showPiece p) "" b
   where showPiece p = name p ++ "," ++ (show . rotation $ p) ++ " "
 
-solution :: (Board, SetOfPieces) -> Board
+solution :: State -> Board
 solution (b, s)
   | length b == 9 = b
   | otherwise =
       head [ solution (nb, ns) | (nb, ns) <- nextBoards, boardIsLegal nb ]
-  where nextBoards = [(b, s)]
---   where nextBoards = foldr addWithEachRotation [] (b, s)
+  where nextBoards = foldr (addWithEachRotation b s) [] s
 
--- addWithEachRotation :: Board -> SetOfPieces -> [(Board, SetOfPieces)]
--- addWithEachRotation b s
+addWithEachRotation :: Board -> SetOfPieces -> Piece -> [State] -> [State]
+addWithEachRotation b s p = (\acc -> acc)
 
 -- Only check latest piece
 boardIsLegal :: Board -> Bool
