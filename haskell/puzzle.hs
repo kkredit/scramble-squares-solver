@@ -6,32 +6,51 @@
 module Main
   where
 
+import Data.Maybe
+
 main :: IO ()
 main = putStrLn $ "Solution: " ++ showBoard findSolution
 
 data End = Tail | Head deriving (Eq, Show)
-data Edge = Ant End | Beetle End | Dragonfly End | Mantis End deriving (Eq, Show)
-data Piece = Piece { name :: String, edges :: [Edge] } deriving (Eq, Show)
-type Rotation = Int
-type Board = [(Piece, Rotation)]
+data Insect = Ant | Beetle | Dragonfly | Mantis deriving (Eq, Show)
+data Edge = Edge { insect :: Insect, end :: End } deriving (Eq, Show)
+data Piece = Piece {
+    name :: String
+  , rotation :: Int
+  , top :: Edge
+  , right :: Edge
+  , bottom :: Edge
+  , left:: Edge
+  } deriving (Eq, Show)
+type Board = [Piece]
 type SetOfPieces = [Piece]
 
 findSolution :: Board
 findSolution = solution ([], [
-    Piece{name = "1", edges = [Dragonfly Tail, Ant Head, Beetle Tail, Mantis Head]},
-    Piece{name = "2", edges = [Dragonfly Tail, Ant Tail, Beetle Head, Mantis Tail]},
-    Piece{name = "3", edges = [Dragonfly Tail, Mantis Head, Beetle Tail, Ant Head]},
-    Piece{name = "4", edges = [Dragonfly Tail, Ant Head, Mantis Head, Ant Tail]},
-    Piece{name = "5", edges = [Dragonfly Tail, Ant Head, Beetle Head, Mantis Head]},
-    Piece{name = "6", edges = [Dragonfly Head, Beetle Tail, Mantis Head, Ant Tail]},
-    Piece{name = "7", edges = [Dragonfly Head, Mantis Tail, Beetle Head, Ant Tail]},
-    Piece{name = "8", edges = [Dragonfly Head, Mantis Head, Beetle Head, Dragonfly Tail]},
-    Piece{name = "9", edges = [Beetle Tail, Mantis Tail, Ant Head, Beetle Head]}
+    makePiece 1 Dragonfly Tail Ant Head Beetle Tail Mantis Head
+  , makePiece 2 Dragonfly Tail Ant Tail Beetle Head Mantis Tail
+  , makePiece 3 Dragonfly Tail Mantis Head Beetle Tail Ant Head
+  , makePiece 4 Dragonfly Tail Ant Head Mantis Head Ant Tail
+  , makePiece 5 Dragonfly Tail Ant Head Beetle Head Mantis Head
+  , makePiece 6 Dragonfly Head Beetle Tail Mantis Head Ant Tail
+  , makePiece 7 Dragonfly Head Mantis Tail Beetle Head Ant Tail
+  , makePiece 8 Dragonfly Head Mantis Head Beetle Head Dragonfly Tail
+  , makePiece 9 Beetle Tail Mantis Tail Ant Head Beetle Head
   ])
+
+makePiece :: Int -> Insect -> End -> Insect -> End -> Insect -> End -> Insect -> End -> Piece
+makePiece n i1 e1 i2 e2 i3 e3 i4 e4 = Piece {
+    name = show n
+  , rotation = 0
+  , top = Edge { insect = i1, end = e1 }
+  , right = Edge { insect = i2, end = e2 }
+  , bottom = Edge { insect = i3, end = e3 }
+  , left = Edge { insect = i4, end = e4 }
+  }
 
 showBoard :: Board -> String
 showBoard b = foldl (\acc p -> acc ++ showPiece p) "" b
-  where showPiece (p, r) = name p ++ "," ++ show r ++ " "
+  where showPiece p = name p ++ "," ++ (show . rotation $ p) ++ " "
 
 solution :: (Board, SetOfPieces) -> Board
 solution (b, s)
@@ -39,21 +58,33 @@ solution (b, s)
   | otherwise =
       head [ solution (nb, ns) | (nb, ns) <- nextBoards, boardIsLegal nb ]
   where nextBoards = [(b, s)]
+--   where nextBoards = foldr addWithEachRotation [] (b, s)
+
+-- addWithEachRotation :: Board -> SetOfPieces -> [(Board, SetOfPieces)]
+-- addWithEachRotation b s
 
 -- Only check latest piece
 boardIsLegal :: Board -> Bool
 boardIsLegal b
   | pos < 2 = True
   | otherwise = (topRow || matchesAbove) && (leftCol || matchesLeft)
-  where pos = length b
-        topRow = pos < 4
-        leftCol = pos `mod` 3 == 1
-        matchesAbove = True
-        matchesLeft = True
+  where this = tail b !! 0
+        pos = length b - 1
+        topRow = pos < 3
+        leftCol = pos `mod` 3 == 0
+        matchesAbove = edgesMatch (top this) . bottom . fromJust . above b $ pos
+        matchesLeft = edgesMatch (left this) . right . fromJust . leftTo b $ pos
+
+above :: Board -> Int -> Maybe Piece
+above = relativePiece (<3) 3
+
+leftTo :: Board -> Int -> Maybe Piece
+leftTo = relativePiece ((==) 0 . mod 3) 1
+
+relativePiece :: (Int -> Bool) -> Int -> Board -> Int -> Maybe Piece
+relativePiece cond offset b index
+  | cond $ index = Nothing
+  | otherwise = Just $ b !! (index - offset)
 
 edgesMatch :: Edge -> Edge -> Bool
-edgesMatch (Ant e1) (Ant e2) = e1 /= e2
-edgesMatch (Beetle e1) (Beetle e2) = e1 /= e2
-edgesMatch (Dragonfly e1) (Dragonfly e2) = e1 /= e2
-edgesMatch (Mantis e1) (Mantis e2) = e1 /= e2
-edgesMatch _ _= False
+edgesMatch e1 e2 = (insect e1 == insect e2) && (end e1 /= end e2)
