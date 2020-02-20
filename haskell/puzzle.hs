@@ -40,13 +40,9 @@ findSolution = solution ([], [
 
 makePiece :: Int -> Insect -> End -> Insect -> End -> Insect -> End -> Insect -> End -> Piece
 makePiece n i1 e1 i2 e2 i3 e3 i4 e4 = Piece {
-    name = show n
-  , rotation = 0
-  , top = Edge { insect = i1, end = e1 }
-  , right = Edge { insect = i2, end = e2 }
-  , bottom = Edge { insect = i3, end = e3 }
-  , left = Edge { insect = i4, end = e4 }
+    name = show n, rotation = 0, top = e i1 e1, right = e i2 e2, bottom = e i3 e3, left = e i4 e4
   }
+  where e x y = Edge { insect = x, end = y }
 
 showBoard :: Board -> String
 showBoard b = foldl (\acc p -> acc ++ showPiece p) "" b
