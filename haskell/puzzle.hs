@@ -9,7 +9,7 @@ module Main
 import Data.Maybe
 
 main :: IO ()
-main = putStrLn $ "Solution: " ++ showBoard findSolution
+main = putStrLn $ "Solution: " ++ show findSolution
 
 data End = Tail | Head deriving (Eq, Show)
 data Insect = Ant | Beetle | Dragonfly | Mantis deriving (Eq, Show)
@@ -27,7 +27,7 @@ type SetOfPieces = [Piece]
 type State = (Board, SetOfPieces)
 
 findSolution :: Board
-findSolution = solution ([], [
+findSolution = head . solutions $ ([], [
     makePiece 1 Dragonfly Tail Ant Head Beetle Tail Mantis Head
   , makePiece 2 Dragonfly Tail Ant Tail Beetle Head Mantis Tail
   , makePiece 3 Dragonfly Tail Mantis Head Beetle Tail Ant Head
@@ -49,38 +49,44 @@ showBoard :: Board -> String
 showBoard b = foldl (\acc p -> acc ++ showPiece p) "" b
   where showPiece p = name p ++ "," ++ (show . rotation $ p) ++ " "
 
-solution :: State -> Board
-solution (b, s)
-  | length b == 9 = b
-  | otherwise =
-      head [ solution (nb, ns) | (nb, ns) <- nextBoards, boardIsLegal nb ]
-  where nextBoards = foldr (addWithEachRotation b s) [] s
+solutions :: State -> [Board]
+solutions (b, []) = [b]
+solutions (b, s) = [ (nb, ns) | (nb, ns) <- nextStates, boardIsLegal nb ] >>= solutions
+  where nextStates = foldr (addWithEachRotation b s) [] s
 
 addWithEachRotation :: Board -> SetOfPieces -> Piece -> [State] -> [State]
-addWithEachRotation b s p = (\acc -> acc)
+addWithEachRotation b s p = (++) newStates
+  where newStates = [ ns | ns <- map nsWithRotation [1..4] ]
+        nsWithRotation n = (b ++ (spunPiece n), filter (/= p) s)
+        spunPiece n = tail . take n . iterate rotatePiece $ p
+
+rotatePiece :: Piece -> Piece
+rotatePiece p = Piece {
+    name = name p
+  , rotation = (rotation p + 1) `mod` 4
+  , top = left p
+  , right = top p
+  , bottom = right p
+  , left = bottom p
+}
 
 -- Only check latest piece
 boardIsLegal :: Board -> Bool
 boardIsLegal b
-  | pos < 2 = True
+  | pos < 1 = True
   | otherwise = (topRow || matchesAbove) && (leftCol || matchesLeft)
-  where this = tail b !! 0
-        pos = length b - 1
+  where pos = length b - 1
         topRow = pos < 3
         leftCol = pos `mod` 3 == 0
+        this = tail b !! 0
         matchesAbove = edgesMatch (top this) . bottom . fromJust . above b $ pos
         matchesLeft = edgesMatch (left this) . right . fromJust . leftTo b $ pos
-
-above :: Board -> Int -> Maybe Piece
-above = relativePiece (<3) 3
-
-leftTo :: Board -> Int -> Maybe Piece
-leftTo = relativePiece ((==) 0 . mod 3) 1
+        edgesMatch e1 e2 = (insect e1 == insect e2) && (end e1 /= end e2)
+        above = relativePiece (<3) 3
+        leftTo = relativePiece (\x -> x`mod`3==0) 1
 
 relativePiece :: (Int -> Bool) -> Int -> Board -> Int -> Maybe Piece
 relativePiece cond offset b index
   | cond $ index = Nothing
+  | offset > index = Nothing
   | otherwise = Just $ b !! (index - offset)
-
-edgesMatch :: Edge -> Edge -> Bool
-edgesMatch e1 e2 = (insect e1 == insect e2) && (end e1 /= end e2)
