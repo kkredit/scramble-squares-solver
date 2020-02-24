@@ -8,9 +8,6 @@ module Main
 
 import Data.Maybe
 
-main :: IO ()
-main = putStrLn $ "Solution: " ++ show findSolution
-
 data End = Tail | Head deriving (Eq, Show)
 data Insect = Ant | Beetle | Dragonfly | Mantis deriving (Eq, Show)
 data Edge = Edge { insect :: Insect, end :: End } deriving (Eq, Show)
@@ -25,6 +22,13 @@ data Piece = Piece {
 type Board = [Piece]
 type SetOfPieces = [Piece]
 type State = (Board, SetOfPieces)
+
+main :: IO ()
+main = putStrLn $ "Solution: " ++ show findSolution
+
+showBoard :: Board -> String
+showBoard b = foldl (\acc p -> acc ++ showPiece p) "" b
+  where showPiece p = name p ++ "," ++ (show . rotation $ p) ++ " "
 
 findSolution :: Board
 findSolution = head . solutions $ ([], [
@@ -45,10 +49,6 @@ makePiece n i1 e1 i2 e2 i3 e3 i4 e4 = Piece {
   }
   where e x y = Edge { insect = x, end = y }
 
-showBoard :: Board -> String
-showBoard b = foldl (\acc p -> acc ++ showPiece p) "" b
-  where showPiece p = name p ++ "," ++ (show . rotation $ p) ++ " "
-
 solutions :: State -> [Board]
 solutions (b, []) = [b]
 solutions (b, s) = [ (nb, ns) | (nb, ns) <- nextStates, boardIsLegal nb ] >>= solutions
@@ -62,13 +62,9 @@ addWithEachRotation b s p = (++) newStates
 
 rotatePiece :: Piece -> Piece
 rotatePiece p = Piece {
-    name = name p
-  , rotation = (rotation p + 1) `mod` 4
-  , top = left p
-  , right = top p
-  , bottom = right p
-  , left = bottom p
-}
+    name = name p, rotation = (rotation p + 1) `mod` 4
+  , top = left p, right = top p, bottom = right p, left = bottom p
+  }
 
 -- Only check latest piece
 boardIsLegal :: Board -> Bool
