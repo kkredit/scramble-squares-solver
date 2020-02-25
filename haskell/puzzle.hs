@@ -24,7 +24,7 @@ type SetOfPieces = [Piece]
 type State = (Board, SetOfPieces)
 
 main :: IO ()
-main = putStrLn $ "Solution: " ++ show findSolution
+main = putStrLn $ "Solution: " ++ showBoard findSolution
 
 showBoard :: Board -> String
 showBoard b = foldl (\acc p -> acc ++ showPiece p) "" b
@@ -32,15 +32,15 @@ showBoard b = foldl (\acc p -> acc ++ showPiece p) "" b
 
 findSolution :: Board
 findSolution = head . solutions $ ([], [
-    makePiece 1 Dragonfly Tail Ant Head Beetle Tail Mantis Head
-  , makePiece 2 Dragonfly Tail Ant Tail Beetle Head Mantis Tail
-  , makePiece 3 Dragonfly Tail Mantis Head Beetle Tail Ant Head
-  , makePiece 4 Dragonfly Tail Ant Head Mantis Head Ant Tail
-  , makePiece 5 Dragonfly Tail Ant Head Beetle Head Mantis Head
-  , makePiece 6 Dragonfly Head Beetle Tail Mantis Head Ant Tail
-  , makePiece 7 Dragonfly Head Mantis Tail Beetle Head Ant Tail
-  , makePiece 8 Dragonfly Head Mantis Head Beetle Head Dragonfly Tail
-  , makePiece 9 Beetle Tail Mantis Tail Ant Head Beetle Head
+    makePiece 0 Dragonfly Tail Ant Head Beetle Tail Mantis Head
+  , makePiece 1 Dragonfly Tail Ant Tail Beetle Head Mantis Tail
+  , makePiece 2 Dragonfly Tail Mantis Head Beetle Tail Ant Head
+  , makePiece 3 Dragonfly Tail Ant Head Mantis Head Ant Tail
+  , makePiece 4 Dragonfly Tail Ant Head Beetle Head Mantis Head
+  , makePiece 5 Dragonfly Head Beetle Tail Mantis Head Ant Tail
+  , makePiece 6 Dragonfly Head Mantis Tail Beetle Head Ant Tail
+  , makePiece 7 Dragonfly Head Mantis Head Beetle Head Dragonfly Tail
+  , makePiece 8 Beetle Tail Mantis Tail Ant Head Beetle Head
   ])
 
 makePiece :: Int -> Insect -> End -> Insect -> End -> Insect -> End -> Insect -> End -> Piece
@@ -56,9 +56,9 @@ solutions (b, s) = [ (nb, ns) | (nb, ns) <- nextStates, boardIsLegal nb ] >>= so
 
 addWithEachRotation :: Board -> SetOfPieces -> Piece -> [State] -> [State]
 addWithEachRotation b s p = (++) newStates
-  where newStates = [ ns | ns <- map nsWithRotation [1..4] ]
-        nsWithRotation n = (b ++ (spunPiece n), filter (/= p) s)
-        spunPiece n = tail . take n . iterate rotatePiece $ p
+  where newStates = map nsWithRotation [1..4]
+        nsWithRotation n = (b ++ [spunPiece n], filter (/= p) s)
+        spunPiece n = last . take n . iterate rotatePiece $ p
 
 rotatePiece :: Piece -> Piece
 rotatePiece p = Piece {
@@ -74,7 +74,7 @@ boardIsLegal b
   where pos = length b - 1
         topRow = pos < 3
         leftCol = pos `mod` 3 == 0
-        this = tail b !! 0
+        this = last b
         matchesAbove = edgesMatch (top this) . bottom . fromJust . above b $ pos
         matchesLeft = edgesMatch (left this) . right . fromJust . leftTo b $ pos
         edgesMatch e1 e2 = (insect e1 == insect e2) && (end e1 /= end e2)
