@@ -1,11 +1,17 @@
-# Scramble Squares Solver
+# Scramble Squares Solver <!-- omit in toc -->
 
-In 2016 I spent Thanksgiving at a friend's house. They had a puzzle sitting on the table and it
-looked pretty simple--just arrange these pieces so all the shapes line up. I spent hours with it,
-and got within one piece about ten different ways, but could never solve it. This task was better
-suited for a computer.
+- [The Puzzle](#the-puzzle)
+- [The Programs](#the-programs)
+  - [C](#c)
+  - [Go](#go)
+  - [Haskell](#haskell)
+- [Benchmarks](#benchmarks)
 
 ## The Puzzle
+
+In 2016 I spent Thanksgiving at a friend's house. They had a puzzle sitting on the table and it
+looked simple--just arrange these pieces so all the shapes line up. I spent hours with it, and got
+within one piece about ten different ways, but could never solve it. Time to write a program.
 
 The puzzle is a "Scramble Squares" type of puzzle. You can find it
 [here](https://www.puzzlewarehouse.com/Insects-10028ss.html) and
@@ -41,3 +47,15 @@ comfortable language.
 ### Go
 
 The Go solution uses Goroutines to search for a solution in parallel.
+
+### Haskell
+
+The Haskell solution is quite elegant.
+
+## Benchmarks
+
+| Language | Build time (s) | Exe Size (KB) | Runtime (s) | Mem: RSS (KB) |
+|:--------:|:--------------:|:-------------:|:-----------:|:-------------:|
+| c        | 0.33           | 856           | 0.00        | 0.00          |
+| go       | 0.78           | 1982          | 0.06        | 0.06          |
+| haskell  | 2.45           | 1127          | 0.21        | 0.21          |
