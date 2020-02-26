@@ -54,8 +54,14 @@ The Haskell solution is quite elegant.
 
 ## Benchmarks
 
-| Language | Build time (s) | Exe Size (KB) | Runtime (s) | Mem: RSS (KB) |
-|:--------:|:--------------:|:-------------:|:-----------:|:-------------:|
-| c        | 0.33           | 856           | 0.00        | 0.00          |
-| go       | 0.78           | 1982          | 0.06        | 0.06          |
-| haskell  | 2.45           | 1127          | 0.21        | 0.21          |
+Note that the implementation in each language is relatively basic; none have been particularly
+optimized for size or performance.
+
+LOC and Complexity are reported by [scc](https://github.com/boyter/scc). The C application is built
+with static linkage. The rest are with whatever is default.
+
+| Language |  LOC  | Complexity | Build time (s) | Exe Size (KB) | Runtime (s) | Mem: RSS (KB) |
+|:--------:|:-----:|:----------:|:--------------:|:-------------:|:-----------:|:-------------:|
+| c        | 170   | 83         | 0.56           | 856           | 0.00        | 704           |
+| go       | 123   | 18         | 0.99           | 1982          | 0.05        | 6532          |
+| haskell  | 71    | 6          | 2.26           | 1127          | 0.06        | 4012          |
