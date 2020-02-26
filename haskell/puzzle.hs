@@ -26,14 +26,15 @@ type State = (Board, SetOfPieces)
 
 ---------------------------------------------------------------------- IO & initialization
 main :: IO ()
-main = putStrLn $ "Solution: " ++ showBoard findSolution
+main = putStrLn $ "Solutions: " ++ (findSolution >>= showBoard)
 
 showBoard :: Board -> String
-showBoard b = foldl (\acc p -> acc ++ showPiece p) "" b
+showBoard b = foldl (\acc p -> acc ++ showPiece p) "\n -> " b
   where showPiece p = name p ++ "," ++ (show . rotation $ p) ++ " "
 
-findSolution :: Board
-findSolution = head . solutions $ ([], [
+-- Performance hack: call `head . solutions $` to automatically return after finding a solution
+findSolution :: [Board]
+findSolution = solutions $ ([], [
     makePiece 0 Dragonfly Tail Ant Head Beetle Tail Mantis Head
   , makePiece 1 Dragonfly Tail Ant Tail Beetle Head Mantis Tail
   , makePiece 2 Dragonfly Tail Mantis Head Beetle Tail Ant Head
