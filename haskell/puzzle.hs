@@ -8,6 +8,7 @@ module Main
 
 import Data.Maybe
 
+---------------------------------------------------------------------- Data types
 data End = Tail | Head deriving (Eq, Show)
 data Insect = Ant | Beetle | Dragonfly | Mantis deriving (Eq, Show)
 data Edge = Edge { insect :: Insect, end :: End } deriving (Eq, Show)
@@ -23,6 +24,7 @@ type Board = [Piece]
 type SetOfPieces = [Piece]
 type State = (Board, SetOfPieces)
 
+---------------------------------------------------------------------- IO & initialization
 main :: IO ()
 main = putStrLn $ "Solution: " ++ showBoard findSolution
 
@@ -49,9 +51,10 @@ makePiece n i1 e1 i2 e2 i3 e3 i4 e4 = Piece {
   }
   where e x y = Edge { insect = x, end = y }
 
+---------------------------------------------------------------------- Puzzle logic
 solutions :: State -> [Board]
 solutions (b, []) = [b]
-solutions (b, s) = [ (nb, ns) | (nb, ns) <- nextStates, boardIsLegal nb ] >>= solutions
+solutions (b, s) = filter (\(nb,_) -> boardIsLegal nb) nextStates >>= solutions
   where nextStates = foldr (addWithEachRotation b s) [] s
 
 addWithEachRotation :: Board -> SetOfPieces -> Piece -> [State] -> [State]
@@ -83,6 +86,6 @@ boardIsLegal b
 
 relativePiece :: (Int -> Bool) -> Int -> Board -> Int -> Maybe Piece
 relativePiece cond offset b index
-  | cond $ index = Nothing
+  | cond index = Nothing
   | offset > index = Nothing
   | otherwise = Just $ b !! (index - offset)
