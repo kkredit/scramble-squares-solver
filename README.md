@@ -60,8 +60,8 @@ optimized for size or performance.
 LOC and Complexity are reported by [scc](https://github.com/boyter/scc). The C application is built
 with static linkage. The rest are with whatever is default.
 
-| Language |  LOC  | Complexity | Build time (s) | Exe Size (KB) | Runtime (s) | Mem: RSS (KB) |
-|:--------:|:-----:|:----------:|:--------------:|:-------------:|:-----------:|:-------------:|
-| c        | 170   | 83         | 0.36           | 856           | 0.00        | 700           |
-| go       | 123   | 18         | 0.82           | 1982          | 0.06        | 6700          |
-| haskell  | 71    | 6          | 2.39           | 1126          | 0.60        | 4228          |
+| Language |  LOC  | Complexity | Build time (s) | Exe Size (KB) | 10x Runtime (s) | Mem: RSS (KB) |
+|:--------:|:-----:|:----------:|:--------------:|:-------------:|:---------------:|:-------------:|
+| c        | 170   | 83         | 0.33           | 856           | 0.07            | 3000          |
+| go       | 123   | 18         | 1.05           | 1982          | 0.94            | 6844          |
+| haskell  | 71    | 6          | 2.43           | 1126          | 3.23            | 4324          |

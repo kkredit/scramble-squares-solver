@@ -13,18 +13,20 @@ function get_scc() {
 }
 
 function get_times() {
-    local TIME_FMT="%e %M"
-    local STATS=$(command time -f "$TIME_FMT" $@ 2>&1 > /dev/null)
-    TIME_S=$(get_word_n "$STATS" 1)
-    MEM_KB=$(get_word_n "$STATS" 2)
+    local TIME_FMT="%U %S %M"
+    local STATS=$(command time -f "$TIME_FMT" bash -c "$@" 2>&1 > /dev/null)
+    local USER_TIME=$(get_word_n "$STATS" 1)
+    local KERNEL_TIME=$(get_word_n "$STATS" 2)
+    TIME_S=$(echo $USER_TIME + $KERNEL_TIME | bc -l | sed 's/^\./0\./g' | sed 's/^0$/0\.00/g')
+    MEM_KB=$(get_word_n "$STATS" 3)
 }
 
 function print_row() {
-    printf "| %-8s | %-5s | %-10s | %-14s | %-13s | %-11s | %-13s |\n" "$1" "$2" "$3" "$4" "$5" "$6" "$7"
+    printf "| %-8s | %-5s | %-10s | %-14s | %-13s | %-15s | %-13s |\n" "$1" "$2" "$3" "$4" "$5" "$6" "$7"
 }
 
-print_row "Language" " LOC " "Complexity" "Build time (s)" "Exe Size (KB)" "Runtime (s)" "Mem: RSS (KB)"
-echo    '|:--------:|:-----:|:----------:|:--------------:|:-------------:|:-----------:|:-------------:|'
+print_row "Language" " LOC " "Complexity" "Build time (s)" "Exe Size (KB)" "10x Runtime (s)" "Mem: RSS (KB)"
+echo    '|:--------:|:-----:|:----------:|:--------------:|:-------------:|:---------------:|:-------------:|'
 
 for LANG in $LANGS; do
     cd $LANG >/dev/null
@@ -39,7 +41,7 @@ for LANG in $LANGS; do
     SIZE_KB=$(( $( stat --printf="%s" bin/puzzle) / 1024))
 
     # Execution
-    get_times ./bin/puzzle
+    get_times "(for i in {1..10}; do ./bin/puzzle; done)"
 
     print_row "$LANG" "$LOC" "$COMPLEXITY" "$BUILD_S" "$SIZE_KB" "$TIME_S" "$MEM_KB"
 
