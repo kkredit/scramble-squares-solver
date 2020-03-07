@@ -1,13 +1,13 @@
 # Scramble Squares Solver <!-- omit in toc -->
 
-- [The Puzzle](#the-puzzle)
-- [The Programs](#the-programs)
+- [Puzzle](#puzzle)
+- [Solutions](#solutions)
   - [C](#c)
   - [Go](#go)
   - [Haskell](#haskell)
 - [Benchmarks](#benchmarks)
 
-## The Puzzle
+## Puzzle
 
 In 2016 I spent Thanksgiving at a friend's house. They had a puzzle sitting on the table and it
 looked simple--just arrange these pieces so all the shapes line up. I spent hours with it, and got
@@ -24,33 +24,32 @@ Here's a picture of what it looks like unsolved:
 
 ![image](images/puzzle.jpg)
 
-## The Programs
+## Solutions
 
 This program was originally written in C. During an exploration of programming languages in 2020, I
-added solutions in Go, Haskell, Rust, and Clojure. [Still TBD as of 1/22/20.]
+added solutions in Go, Haskell, Rust, and Clojure. [Rust and Clojure TBD as of 3/7/20.]
 
-Though the C solution could be directly ported to other languages, the purpose of the exercise is to
-use idiomatic code to demonstrate the power of each new language.
+Each implementation uses the same high-level algorithm. Data structures represent pieces as
+arrangements of sides and boards as arrangements of pieces. The algorithm recursively places each
+possible next piece in the next spot at each possible rotation. if that placement is illegal, it
+stops recurring down that tree. When it has placed all nine pieces successfully, it has found a
+solution. Solutions are printed out as (piece, rotation) tuples. The algorithm doesn't account for
+rotations, so it finds four solutions.
 
 ### C
 
-The program represents pieces as arrangements of sides, then tries to place each piece in the next
-spot at each possible rotation. As soon as it determines an illegal board position, it stops
-searching down that path. When it has placed all nine pieces successfully, it has found a solution.
-Solutions are printed out as (piece, rotation) tuples. It doesn't account for rotations, so
-naturally it finds four solutions. The program could be easily adapted to solve any variant of this
-type of puzzle.
-
-C is definitely not the simplest language for this problem, but at the time it was my most
-comfortable language.
+C is definitely not the simplest language for this problem. This implementation is not highly
+optimized, and the board checking function in particular is quite bad.
 
 ### Go
 
-The Go solution uses Goroutines to search for a solution in parallel.
+The Go solution uses Goroutines to search for a solution in parallel. It was a fairly
+straightforward port from C, though methods made the code simpler.
 
 ### Haskell
 
-The Haskell solution is quite elegant.
+The Haskell solution is quite elegant. It is far simpler, though it runs slowly. I am not practiced
+at writing efficient Haskell.
 
 ## Benchmarks
 
