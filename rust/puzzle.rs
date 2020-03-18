@@ -4,29 +4,40 @@
 // License MIT
 
 ////////////////////////////////////////////////////////////////////// TYPES //
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 enum End { Head, Tail }
 use End::*;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 enum Insect { Ant, Beetle, Dragonfly, Mantis }
 use Insect::*;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Edge {
     insect: Insect,
     end: End
 }
 
+enum Side { Top = 0, Right, Bottom, Left }
+
 type Piece = [Edge; 4];
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct PlacedPiece {
-    index: u32,
-    rotation: u32
+    index: usize,
+    rotation: usize
 }
 
-type Board = Vec<PlacedPiece>;
+/* Board
+ *    1 2 3
+ *    4 5 6
+ *    7 8 9
+ */
+#[derive(Debug, Clone)]
+struct Board {
+    placed: Vec<PlacedPiece>,
+    unplaced: Vec<usize>
+}
 
 ////////////////////////////////////////////////////////////////////// MACROS //
 macro_rules! make_piece {
@@ -49,8 +60,80 @@ const SET_OF_PIECES: [Piece; 9] = [
     make_piece!(Beetle, Tail, Mantis, Tail, Ant, Head, Beetle, Head)
 ];
 
+////////////////////////////////////////////////////////////////////// METHODS //
+impl Edge {
+    fn matches(&self, other: &Edge) -> bool {
+        self.insect == other.insect && self.end != other.end
+    }
+}
+
+impl PlacedPiece {
+    fn side(&self, s: Side) -> &Edge {
+        &SET_OF_PIECES[self.index][((s as usize) + self.rotation) % 4 ]
+    }
+
+    fn top(&self) -> &Edge { self.side(Side::Top) }
+    fn left(&self) -> &Edge { self.side(Side::Left) }
+    fn bottom(&self) -> &Edge { self.side(Side::Bottom) }
+    fn right(&self) -> &Edge { self.side(Side::Right) }
+}
+
+impl Board {
+    fn new() -> Board {
+        Board {
+            placed: Vec::<PlacedPiece>::new(),
+            unplaced: (0..9).collect()
+        }
+    }
+
+    fn get_solutions(&self) -> Vec<Board> {
+        if self.unplaced.is_empty() {
+            println!("Solution! {:?}", self);
+            let cp = self.to_owned();
+            return vec![cp];
+        }
+        let mut solutions = Vec::<Board>::new();
+        for p in 0..self.unplaced.len() {
+            for r in 0..4 {
+                let nb = self.place_piece(p, r);
+                if nb.is_valid() {
+                    if nb.unplaced.len() < 3 {
+                        println!("Going deeper! {:?}", nb);
+                    }
+                    solutions.append(&mut nb.get_solutions());
+                }
+            }
+        }
+        solutions
+    }
+
+    fn place_piece(&self, p: usize, r: usize) -> Board {
+        let mut new_placed = self.placed.to_vec();
+        let mut new_unplaced = self.unplaced.to_vec();
+
+        new_placed.push(PlacedPiece { index: p, rotation: r });
+        new_unplaced.remove(p);
+
+        Board {
+            placed: new_placed.to_owned(),
+            unplaced: new_unplaced.to_owned()
+        }
+    }
+
+    fn is_valid(&self) -> bool {
+        let cur = self.placed.last().unwrap();
+        let index = self.placed.len() - 1;
+        let is_top = index < 3;
+        let is_left = index % 3 == 0;
+        (is_top || (self.placed[index - 3].bottom().matches(cur.top()))) &&
+            (is_left || (self.placed[index - 1].right().matches(cur.left())))
+    }
+}
+
 ////////////////////////////////////////////////////////////////////// FUNCTIONS //
 fn main() {
-    println!("Working on a solution! {:?}", SET_OF_PIECES);
-    let _board = Board::new();
+    println!("Working on a solution...");
+
+    let solutions = Board::new().get_solutions();
+    println!("Found {} solutions!\n{:?}", solutions.len(), solutions);
 }

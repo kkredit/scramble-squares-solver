@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LANGS="c go haskell"
+LANGS="c go haskell rust"
 
 function get_word_n() {
     echo $1 | cut -d" " -f$2
