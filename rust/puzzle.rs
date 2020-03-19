@@ -3,6 +3,8 @@
 // Copyright (c) 2020, Kevin Kredit
 // License MIT
 
+// use std::fmt;
+
 ////////////////////////////////////////////////////////////////////// TYPES //
 #[derive(Debug, Clone, PartialEq)]
 enum End { Head, Tail }
@@ -69,7 +71,7 @@ impl Edge {
 
 impl PlacedPiece {
     fn side(&self, s: Side) -> &Edge {
-        &SET_OF_PIECES[self.index][((s as usize) + self.rotation) % 4 ]
+        &SET_OF_PIECES[self.index][((s as usize) + 4 - self.rotation) % 4]
     }
 
     fn top(&self) -> &Edge { self.side(Side::Top) }
@@ -121,6 +123,7 @@ impl Board {
     }
 
     fn is_valid(&self) -> bool {
+        // Only check latest placed piece
         let cur = self.placed.last().unwrap();
         let index = self.placed.len() - 1;
         let is_top = index < 3;
@@ -130,10 +133,29 @@ impl Board {
     }
 }
 
+// impl fmt::Display for Board {
+//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//         let printed = 0;
+//         for pp in self.placed {
+//             if printed % 3 == 0 {
+//                 write!(f, "\n ");
+//             }
+//             write!(f, " {}:{}", pp.index, pp.rotation);
+//         }
+//         write!(f, "\n ->");
+//         for up in self.unplaced {
+//             write!(f, " {}", up);
+//         }
+//     }
+// }
+
 ////////////////////////////////////////////////////////////////////// FUNCTIONS //
 fn main() {
     println!("Working on a solution...");
 
     let solutions = Board::new().get_solutions();
-    println!("Found {} solutions!\n{:?}", solutions.len(), solutions);
+    println!("Found {} solutions!", solutions.len());
+    for b in solutions {
+        println!("{:?}\n", b);
+    }
 }
