@@ -3,7 +3,7 @@
 // Copyright (c) 2020, Kevin Kredit
 // License MIT
 
-// use std::fmt;
+use std::fmt;
 
 ////////////////////////////////////////////////////////////////////// TYPES //
 #[derive(Debug, Clone, PartialEq)]
@@ -49,6 +49,15 @@ macro_rules! make_piece {
     }
 }
 
+macro_rules! return_on_err {
+    ($e:expr) => {
+        let res = $e;
+        if res.is_err() {
+            return res
+        }
+    }
+}
+
 ////////////////////////////////////////////////////////////////////// DATA //
 const SET_OF_PIECES: [Piece; 9] = [
     make_piece!(Dragonfly, Tail, Ant, Head, Beetle, Tail, Mantis, Head),
@@ -75,9 +84,9 @@ impl PlacedPiece {
     }
 
     fn top(&self) -> &Edge { self.side(Side::Top) }
-    fn left(&self) -> &Edge { self.side(Side::Left) }
-    fn bottom(&self) -> &Edge { self.side(Side::Bottom) }
     fn right(&self) -> &Edge { self.side(Side::Right) }
+    fn bottom(&self) -> &Edge { self.side(Side::Bottom) }
+    fn left(&self) -> &Edge { self.side(Side::Left) }
 }
 
 impl Board {
@@ -100,7 +109,7 @@ impl Board {
                 let nb = self.place_piece(p, r);
                 if nb.is_valid() {
                     if nb.unplaced.len() < 3 {
-                        println!("Going deeper! {:?}", nb);
+                        println!("Going deeper! {}", nb);
                     }
                     solutions.append(&mut nb.get_solutions());
                 }
@@ -133,21 +142,23 @@ impl Board {
     }
 }
 
-// impl fmt::Display for Board {
-//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-//         let printed = 0;
-//         for pp in self.placed {
-//             if printed % 3 == 0 {
-//                 write!(f, "\n ");
-//             }
-//             write!(f, " {}:{}", pp.index, pp.rotation);
-//         }
-//         write!(f, "\n ->");
-//         for up in self.unplaced {
-//             write!(f, " {}", up);
-//         }
-//     }
-// }
+impl fmt::Display for Board {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut printed = 0;
+        for pp in self.placed.iter() {
+            if printed % 3 == 0 {
+                return_on_err!(write!(f, "\n "));
+            }
+            return_on_err!(write!(f, " {}:{}", pp.index, pp.rotation));
+            printed += 1;
+        }
+        return_on_err!(write!(f, "\n ->"));
+        for up in self.unplaced.iter() {
+            return_on_err!(write!(f, " {}", up));
+        }
+        writeln!(f, "")
+    }
+}
 
 ////////////////////////////////////////////////////////////////////// FUNCTIONS //
 fn main() {
@@ -156,6 +167,6 @@ fn main() {
     let solutions = Board::new().get_solutions();
     println!("Found {} solutions!", solutions.len());
     for b in solutions {
-        println!("{:?}\n", b);
+        println!("{}\n", b);
     }
 }
