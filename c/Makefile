@@ -31,7 +31,8 @@ WARNINGS := \
 	-Wmissing-declarations -Wundef -fstrict-aliasing -Wstrict-aliasing=3 \
 	-Wformat=2 -Wsuggest-attribute=pure -Wsuggest-attribute=const
 
-CFLAGS += -std=c99 -D_POSIX_C_SOURCE=200112L -O0 -ggdb3 $(WARNINGS) $(INC_DIRS)
+# CFLAGS += -std=c99 -D_POSIX_C_SOURCE=200112L -O0 -ggdb3 $(WARNINGS) $(INC_DIRS)
+CFLAGS += -std=c99 -D_POSIX_C_SOURCE=200112L -O2 $(WARNINGS) $(INC_DIRS)
 LFLAGS += $(WARNINGS) $(INC_DIRS) -static
 
 default: all

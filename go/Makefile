@@ -23,4 +23,4 @@ $(BINDIR):
 	mkdir -p $(BINDIR)
 
 $(BINARIES): $(BINDIR)/% : $(SRCDIR)/%.go | $(BINDIR)
-	go build -o $@ $<
+	go build -ldflags "-s -w" -o $@ $<

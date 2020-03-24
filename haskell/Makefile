@@ -19,4 +19,4 @@ $(BINDIR):
 	mkdir -p $(BINDIR)
 
 $(BINARIES): $(BINDIR)/% : $(SRCDIR)/%.hs | $(BINDIR)
-	ghc -outputdir $(BINDIR) -o $@ $<
+	ghc -O2 -outputdir $(BINDIR) -o $@ $<

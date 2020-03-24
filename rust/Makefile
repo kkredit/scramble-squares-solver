@@ -21,7 +21,7 @@ $(BINDIR):
 	mkdir -p $(BINDIR)
 
 $(BINARIES): $(BINDIR)/% : $(SRCDIR)/%.rs | $(BINDIR)
-	rustc -o $@ $<
+	rustc -O -o $@ $<
 
 $(DEBUG_BINARIES): $(BINDIR)/%_debug : $(SRCDIR)/%.rs | $(BINDIR)
 	rustc -g -o $@ $<
