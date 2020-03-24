@@ -99,18 +99,13 @@ impl Board {
 
     fn get_solutions(&self) -> Vec<Board> {
         if self.unplaced.is_empty() {
-            println!("Solution! {:?}", self);
-            let cp = self.to_owned();
-            return vec![cp];
+            return vec![self.to_owned()];
         }
         let mut solutions = Vec::<Board>::new();
-        for p in 0..self.unplaced.len() {
+        for p in self.unplaced.iter() {
             for r in 0..4 {
-                let nb = self.place_piece(p, r);
+                let nb = self.place_piece(*p, r);
                 if nb.is_valid() {
-                    if nb.unplaced.len() < 3 {
-                        println!("Going deeper! {}", nb);
-                    }
                     solutions.append(&mut nb.get_solutions());
                 }
             }
@@ -119,16 +114,10 @@ impl Board {
     }
 
     fn place_piece(&self, p: usize, r: usize) -> Board {
-        let mut new_placed = self.placed.to_vec();
-        let mut new_unplaced = self.unplaced.to_vec();
-
-        new_placed.push(PlacedPiece { index: p, rotation: r });
-        new_unplaced.remove(p);
-
-        Board {
-            placed: new_placed.to_owned(),
-            unplaced: new_unplaced.to_owned()
-        }
+        let mut nb = self.clone();
+        nb.placed.push(PlacedPiece { index: p, rotation: r });
+        nb.unplaced.retain(|&up| up != p);
+        nb
     }
 
     fn is_valid(&self) -> bool {
@@ -152,9 +141,11 @@ impl fmt::Display for Board {
             return_on_err!(write!(f, " {}:{}", pp.index, pp.rotation));
             printed += 1;
         }
-        return_on_err!(write!(f, "\n ->"));
-        for up in self.unplaced.iter() {
-            return_on_err!(write!(f, " {}", up));
+        if self.unplaced.len() > 0 {
+            return_on_err!(write!(f, "\n ->"));
+            for up in self.unplaced.iter() {
+                return_on_err!(write!(f, " {}", up));
+            }
         }
         writeln!(f, "")
     }
@@ -166,7 +157,5 @@ fn main() {
 
     let solutions = Board::new().get_solutions();
     println!("Found {} solutions!", solutions.len());
-    for b in solutions {
-        println!("{}\n", b);
-    }
+    solutions.iter().for_each(|b| println!("{}", b));
 }
