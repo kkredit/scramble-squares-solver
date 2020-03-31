@@ -20,11 +20,11 @@ all: $(BINARIES)
 clean:
 	rm -rf $(BINDIR) $(LEIN_BINDIR)
 
-$(BINDIR):
-	mkdir -p $(BINDIR)
-
 $(JARS): $(SOURCES)
 	lein uberjar
+
+$(BINDIR):
+	mkdir -p $(BINDIR)
 
 $(BINARIES): $(JARS) | $(BINDIR)
 	JAR_ABS=`realpath $<` && printf "#!/bin/bash\njava -jar $$JAR_ABS\n" > $@
