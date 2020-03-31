@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LANGS="c go haskell rust"
+LANGS="c go haskell rust clojure"
 
 function get_word_n() {
     echo $1 | cut -d" " -f$2
@@ -14,7 +14,7 @@ function get_scc() {
 
 function get_times() {
     local TIME_FMT="%U %S %M"
-    local STATS=$(command time -f "$TIME_FMT" bash -c "$@" 2>&1 > /dev/null)
+    local STATS=$(command time -f "$TIME_FMT" bash -c "$@" 2>&1 > /dev/null | tail -1)
     local USER_TIME=$(get_word_n "$STATS" 1)
     local KERNEL_TIME=$(get_word_n "$STATS" 2)
     TIME_S=$(echo $USER_TIME + $KERNEL_TIME | bc -l | sed 's/^\./0\./g' | sed 's/^0$/0\.00/g')
@@ -32,13 +32,15 @@ for LANG in $LANGS; do
     cd $LANG >/dev/null
 
     # Complexity
-    get_scc "puzzle.*" "$LANG"
+    [[ "$LANG" == "clojure" ]] && SRC=src/puzzle/*.clj || SRC=puzzle.*
+    get_scc "$SRC" "$LANG"
 
     # Build
     make clean >/dev/null
     get_times make
     BUILD_S=$TIME_S
-    SIZE_KB=$(( $( stat --printf="%s" bin/puzzle) / 1024))
+    [[ "$LANG" == "clojure" ]] && EXE=target/puzzle-0.1.0-SNAPSHOT-standalone.jar || EXE=bin/puzzle
+    SIZE_KB=$(( $( stat --printf="%s" $EXE) / 1024))
 
     # Execution
     get_times "(for i in {1..10}; do ./bin/puzzle; done)"
