@@ -79,11 +79,11 @@ boardIsLegal b
         topRow = pos < 3
         leftCol = pos `mod` 3 == 0
         this = last b
-        matchesAbove = edgesMatch (top this) . bottom . fromJust . above b $ pos
-        matchesLeft = edgesMatch (left this) . right . fromJust . leftTo b $ pos
+        matchesAbove = edgesMatch (top this) . bottom . fromJust . above $ pos
+        matchesLeft = edgesMatch (left this) . right . fromJust . leftTo $ pos
         edgesMatch e1 e2 = (insect e1 == insect e2) && (end e1 /= end e2)
-        above = relativePiece (<3) 3
-        leftTo = relativePiece (\x -> x`mod`3==0) 1
+        above = relativePiece (<3) 3 b
+        leftTo = relativePiece (\x -> x`mod`3==0) 1 b
 
 relativePiece :: (Int -> Bool) -> Int -> Board -> Int -> Maybe Piece
 relativePiece cond offset b index
