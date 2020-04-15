@@ -53,9 +53,8 @@
       (let [
             nextStates (fn [] (into [] (flatten (map #(addWithEachRotation state %) (:unplaced state)))))
             nextLegalStates (fn [] (into [] (filter #(boardIsLegal (:placed %)) (nextStates))))]
-        (->> (nextLegalStates)
-          (mapcat solutions)
-        )))
+        (mapcat solutions (nextLegalStates))
+      ))
   )
 
 (defn makePiece [n i1 e1 i2 e2 i3 e3 i4 e4]
