@@ -6,6 +6,7 @@
   - [Go](#go)
   - [Haskell](#haskell)
   - [Rust](#rust)
+  - [Clojure](#clojure)
 - [Benchmarks](#benchmarks)
 
 ## Puzzle
@@ -28,7 +29,7 @@ Here's a picture of what it looks like unsolved:
 ## Solutions
 
 This program was originally written in C. During an exploration of programming languages in 2020, I
-added solutions in Go, Haskell, Rust, and Clojure. [Clojure TBD as of 3/24/20.]
+added solutions in Go, Haskell, Rust, and Clojure.
 
 Each implementation uses the same high-level algorithm. Data structures represent pieces as
 arrangements of sides and boards as arrangements of pieces. The algorithm recursively places each
@@ -62,6 +63,11 @@ exactly. The pattern matching and functional-_lite_(TM) capability felt like Has
 functionally in Rust is not natural, but having the capability when it is particularly convenient is
 wonderful.
 
+### Clojure
+
+The Clojure solution is a direct port of the Haskell solution. I never quite grokked Clojure's
+REPL-oriented development workflow.
+
 ## Benchmarks
 
 Note that the implementation in each language is relatively basic; none have been particularly
@@ -78,7 +84,8 @@ comparison, each language should implement the same features.
 
 | Language |  LOC  | Complexity | Build time (s) | Exe Size (KB) | 10x Runtime (s) | Mem: RSS (KB) |
 |:--------:|:-----:|:----------:|:--------------:|:-------------:|:---------------:|:-------------:|
-| c        | 170   | 83         | 0.12           | 829           | 0.01            | 2876          |
-| go       | 123   | 18         | 0.22           | 1416          | 0.44            | 7812          |
-| haskell  | 71    | 6          | 1.08           | 1071          | 0.45            | 4032          |
-| rust     | 125   | 18         | 0.89           | 2578          | 0.14            | 2940          |
+| c        | 170   | 83         | 0.13           | 829           | 0.01            | 2944          |
+| go       | 123   | 18         | 0.21           | 1416          | 0.41            | 7672          |
+| haskell  | 71    | 6          | 1.09           | 1071          | 0.47            | 4036          |
+| rust     | 125   | 18         | 0.91           | 2578          | 0.14            | 2900          |
+| clojure  | 71    | 0          | 6.95           | 3629          | 34.26           | 260248        |
