@@ -3,6 +3,6 @@
   :url "https://github.com/kkredit/scramble-squares-solver"
   :license {:name "MIT License"
             :url "https://mit-license.org/"}
-  :dependencies [[org.clojure/clojure "1.8.0"]]
+  :dependencies [[org.clojure/clojure "1.8.0"] [org.clojure/tools.trace "0.7.10"]]
   :main puzzle.core
   :aot [puzzle.core])
