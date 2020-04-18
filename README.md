@@ -1,6 +1,6 @@
 # Scramble Squares Solver <!-- omit in toc -->
 
-- [Puzzle](#puzzle)
+- [Motivation](#motivation)
 - [Solutions](#solutions)
   - [C](#c)
   - [Go](#go)
@@ -8,8 +8,11 @@
   - [Rust](#rust)
   - [Clojure](#clojure)
 - [Benchmarks](#benchmarks)
+  - [Puzzle](#puzzle)
+  - [Baseline](#baseline)
+  - [Difference: Baseline -> Puzzle](#difference-baseline---puzzle)
 
-## Puzzle
+## Motivation
 
 In 2016 I spent Thanksgiving at a friend's house. They had a puzzle sitting on the table and it
 looked simple--just arrange these pieces so all the shapes line up. I spent hours with it, and got
@@ -82,10 +85,39 @@ Go but would add considerable complexity to some other languages. The Rust solut
 `fmt::Display for Board`, which alone accounts for 27 LOC and 7 points of complexity. For a fair
 comparison, each language should implement the same features.
 
+There are three sets of benchmarks: the [Puzzle](#puzzle) benchmarks run the puzzle solving
+applications. The [Baseline](#baseline) benchmarks run a dummy application that performs each
+language's version of `return 0;`. The [Difference](#difference-baseline---puzzle) benchmarks are
+calculated as `Puzzle - Baseline`. The purpose of these separate sets is to identify the benchmark
+values for each version that are due to the application vs due to the languages and toolsets
+themselves.
+
+### Puzzle
+
 | Language |  LOC  | Complexity | Build time (s) | Exe Size (KB) | 10x Runtime (s) | Mem: RSS (KB) |
 |:--------:|:-----:|:----------:|:--------------:|:-------------:|:---------------:|:-------------:|
-| c        | 170   | 83         | 0.13           | 829           | 0.01            | 2944          |
-| go       | 123   | 18         | 0.21           | 1416          | 0.41            | 7672          |
-| haskell  | 71    | 6          | 1.09           | 1071          | 0.47            | 4036          |
-| rust     | 125   | 18         | 0.91           | 2578          | 0.14            | 2900          |
-| clojure  | 71    | 0          | 6.95           | 3629          | 34.26           | 260248        |
+| c        | 170   | 83         | 0.16           | 829           | 0.01            | 2880          |
+| go       | 123   | 18         | 0.36           | 1416          | 0.60            | 7444          |
+| haskell  | 71    | 6          | 1.37           | 1071          | 0.60            | 4040          |
+| rust     | 125   | 18         | 1.12           | 2578          | 0.16            | 2964          |
+| clojure  | 71    | 0          | 10.29          | 3629          | 37.42           | 259744        |
+
+### Baseline
+
+| Language |  LOC  | Complexity | Build time (s) | Exe Size (KB) | 10x Runtime (s) | Mem: RSS (KB) |
+|:--------:|:-----:|:----------:|:--------------:|:-------------:|:---------------:|:-------------:|
+| c        | 5     | 0          | 0.08           | 824           | 0.00            | 2816          |
+| go       | 4     | 0          | 0.15           | 788           | 0.01            | 2920          |
+| haskell  | 4     | 0          | 0.70           | 969           | 0.01            | 3364          |
+| rust     | 3     | 0          | 0.23           | 2557          | 0.01            | 2932          |
+| clojure  | 7     | 0          | 8.30           | 3602          | 19.15           | 94764         |
+
+### Difference: Baseline -> Puzzle
+
+| Language |  LOC  | Complexity | Build time (s) | Exe Size (KB) | 10x Runtime (s) | Mem: RSS (KB) |
+|:--------:|:-----:|:----------:|:--------------:|:-------------:|:---------------:|:-------------:|
+| c        | 165   | 83         | 0.08           | 5             | 0.01            | 64            |
+| go       | 119   | 18         | 0.21           | 628           | 0.59            | 4524          |
+| haskell  | 67    | 6          | 0.67           | 102           | 0.59            | 676           |
+| rust     | 122   | 18         | 0.89           | 21            | 0.15            | 32            |
+| clojure  | 64    | 0.00       | 1.99           | 27            | 18.27           | 164980        |
