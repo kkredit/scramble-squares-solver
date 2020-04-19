@@ -39,21 +39,27 @@ rotations, so it finds four solutions.
 
 ### C
 
-C is definitely not the simplest language for this problem. This implementation is not highly
-optimized, and the board checking function in particular is quite bad.
+C is not the simplest language for this problem, but it is the language in which I have the most
+experience. Though it is actually shorter and less complex than the Go and Rust solutions, it did
+require me to do more of the mental lifting.
 
 ### Go
 
 The Go solution uses Goroutines to search for a solution in parallel. It was a fairly
-straightforward port from C, though methods made the code simpler.
+straightforward port from C, though methods made the code easier to write and understand.
 
 ### Haskell
 
-The Haskell solution is quite elegant. It is far simpler, though it runs slowly. I am not practiced
-at writing efficient Haskell.
+The Haskell solution is quite elegant. It is far simpler, and actually runs in approximately the
+same time as the Go solution.
 
 ### Rust
 
+The Rust solution feels like a mix of the C, Go, and Haskell solutions. It's memory usage and macro
+system felt like C, though improved. It's object methods and overall structure felt like Go. The
+functional-_lite_ features felt like Haskell, though clunky.
+
+<!--
 The Rust solution feels like a mix of the C, Go, and Haskell solutions. It's memory usage felt like
 C. Of course, Rust is safe, but the way to think about memory felt the same. Rust's macro system,
 similarly, is more powerful yet has a familiar feel. It's object methods felt like Go. The overall
@@ -61,11 +67,13 @@ structure of the program was extremely similar, and the LOC and Complexity metri
 exactly. The pattern matching and functional-_lite_ capability felt like Haskell. Programming
 functionally in Rust is not natural, but having the capability when it is particularly convenient is
 really nice.
+-->
 
 ### Clojure
 
 The Clojure solution is a direct port of the Haskell solution. I never quite grokked Clojure's
-REPL-oriented development workflow.
+REPL-oriented development workflow. Despite the awkwardness of my Clojure style, I think its syntax
+is slightly more understandable, if not truly pleasant.
 
 ## Benchmarks
 
