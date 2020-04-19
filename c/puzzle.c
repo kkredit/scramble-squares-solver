@@ -56,7 +56,7 @@ typedef placed_piece_t board_t[9];
  *                                                      Function declarations */
 bool board_is_legal(board_t board, int index);
 void print_board(board_t board);
-void recursive_check(board_t board);
+void recursive_check(board_t board, int current_index);
 
 
 /******************************************************************************
@@ -85,7 +85,7 @@ int main(void) {
     };
 
     printf("Working on the solution to the puzzle...\n");
-    recursive_check(board);
+    recursive_check(board, 0);
     printf("Checked %lu boards\n", num_boards_checked);
 
     return 0;
@@ -94,7 +94,7 @@ int main(void) {
 
 /******************************************************************************
  *                                                         Internal functions */
-void recursive_check(board_t board){
+void recursive_check(board_t board, int current_index){
     // Each level of recursion adds each possible next piece
     // after adding, check for legal state
     // if legal
@@ -103,34 +103,31 @@ void recursive_check(board_t board){
     //      else
     //          recur next level
 
-    // Determine the legal next moves
-    bool next_moves[9] = {true, true, true, true, true, true, true, true, true};
-    int moves_left = 9;
+    // Determine unplaced pieces from pieces_set
+    bool unplaced_indices[9] = {true, true, true, true, true, true, true, true, true};
     for(int i = 0; i < 9; i++){
         if(-1 != board[i].set_index){
-            next_moves[board[i].set_index] = false;
-            moves_left--;
+            unplaced_indices[board[i].set_index] = false;
         }
     }
 
     // For each possible move
     for(int index = 0; index < 9; index++){
-        // If legal
-        if(next_moves[index]){
+        // If unplaced
+        if(unplaced_indices[index]){
             // For each rotation
             for(int rot_pos = 0; rot_pos < 4; rot_pos++){
                 // Add to board, check if legal, follow logic outlined above
-                int place_index = 9 - moves_left;
-                board[place_index].set_index = index;
-                board[place_index].rotation  = rot_pos;
-                if(board_is_legal(board, place_index)){
-                    if(1 == moves_left){
+                board[current_index].set_index = index;
+                board[current_index].rotation  = rot_pos;
+                if(board_is_legal(board, current_index)){
+                    if(8 == current_index){
                         print_board(board);
                     }
                     else {
                         board_t board_copy;
                         memcpy(board_copy, board, sizeof(board_t));
-                        recursive_check(board_copy);
+                        recursive_check(board_copy, current_index + 1);
                     }
                 }
             }
