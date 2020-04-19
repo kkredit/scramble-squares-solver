@@ -1,33 +1,29 @@
 # Scramble Squares Solver <!-- omit in toc -->
 
+A puzzle solving program written in a variety of languages.
+
 - [Motivation](#motivation)
 - [Solutions](#solutions)
-  - [C](#c)
-  - [Go](#go)
-  - [Haskell](#haskell)
-  - [Rust](#rust)
-  - [Clojure](#clojure)
 - [Benchmarks](#benchmarks)
-  - [Puzzle](#puzzle)
-  - [Baseline](#baseline)
-  - [Difference: Baseline -> Puzzle](#difference-baseline---puzzle)
 
 ## Motivation
 
-In 2016 I spent Thanksgiving at a friend's house. They had a puzzle sitting on the table and it
-looked simple--just arrange these pieces so all the shapes line up. I spent hours with it, and got
-within one piece about ten different ways, but could never solve it. Time to write a program.
+One holiday spent at a friend's house, I found a puzzle with a simple premise--arrange these nine
+pieces so all the insects line up. I spent hours with it, and got within one piece of a solution at
+least ten different ways, but could not solve it. Time to write a program.
 
-The puzzle is a "Scramble Squares" type of puzzle. You can find it
+The puzzle was of the "Scramble Squares" variety. You can find it
 [here](https://www.puzzlewarehouse.com/Insects-10028ss.html) and
 [here](https://www.amazon.com/B-Dazzle-10028-Scramble-Squares-Insects/dp/B000021Z0S). The idea is
 that each touching edge must have a complete insect. For example, if you have the head of a beetle
-pointing up on the left piece, you must have the abdomen of a beetle pointing down on the right
-piece. Edges on the outer edge of the entire puzzle do not matter.
+on the right edge of the left piece, you must have the abdomen of a beetle on the left edge of the
+right piece. Edges on the perimeter of the puzzle do not matter.
 
 Here's a picture of what it looks like unsolved:
 
-![image](images/puzzle.jpg)
+<div style="text-align:center">
+  <img src="images/puzzle.jpg" width="500">
+</div>
 
 ## Solutions
 
@@ -36,7 +32,7 @@ added solutions in Go, Haskell, Rust, and Clojure.
 
 Each implementation uses the same high-level algorithm. Data structures represent pieces as
 arrangements of sides and boards as arrangements of pieces. The algorithm recursively places each
-possible next piece in the next spot at each possible rotation. if that placement is illegal, it
+possible next piece in the next spot at each possible rotation. If that placement is illegal, it
 stops recurring down that tree. When it has placed all nine pieces successfully, it has found a
 solution. Solutions are printed out as (piece, rotation) tuples. The algorithm doesn't account for
 rotations, so it finds four solutions.
@@ -58,13 +54,13 @@ at writing efficient Haskell.
 
 ### Rust
 
-The Rust solution feels like a mix of all the previous three languages. It's memory usage felt like
+The Rust solution feels like a mix of the C, Go, and Haskell solutions. It's memory usage felt like
 C. Of course, Rust is safe, but the way to think about memory felt the same. Rust's macro system,
 similarly, is more powerful yet has a familiar feel. It's object methods felt like Go. The overall
 structure of the program was extremely similar, and the LOC and Complexity metrics match almost
-exactly. The pattern matching and functional-_lite_(TM) capability felt like Haskell. Programming
+exactly. The pattern matching and functional-_lite_ capability felt like Haskell. Programming
 functionally in Rust is not natural, but having the capability when it is particularly convenient is
-wonderful.
+really nice.
 
 ### Clojure
 
@@ -82,8 +78,20 @@ with static linkage. The rest are with whatever is default.
 The LOC and complexity comparisons are not entirely fair, as each program implements a slightly
 different set of features. For example, the Go solution implements parallelism, which is trivial in
 Go but would add considerable complexity to some other languages. The Rust solution implements
-`fmt::Display for Board`, which alone accounts for 27 LOC and 7 points of complexity. For a fair
-comparison, each language should implement the same features.
+nicely-formatted solution print via `fmt::Display for Board`, which alone accounts for 27 LOC and 7
+points of complexity. For a fairer comparison, each language should implement the same features.
+
+The tool also fails to measure the complexity of the Clojure solution, which really should be about
+the same as the Haskell solution. Consider from the [scc
+README](https://github.com/boyter/scc/blob/850e8be775dac636f9da5864b26974b123269bd2/README.md):
+
+>The complexity estimate is really just a number that is only comparable to files in the same
+language. It should not be used to compare languages directly without weighting them. The reason for
+this is that its calculated by looking for branch and loop statements in the code and incrementing a
+counter for that file.  
+Because some languages don't have loops and instead use recursion they can
+have a lower complexity count. Does this mean they are less complex? Probably not, but the tool
+cannot see this because it does not build an AST of the code as it only scans through it.
 
 There are three sets of benchmarks: the [Puzzle](#puzzle) benchmarks run the puzzle solving
 applications. The [Baseline](#baseline) benchmarks run a dummy application that performs each
@@ -96,28 +104,28 @@ themselves.
 
 | Language |  LOC  | Complexity | Build time (s) | Exe Size (KB) | 10x Runtime (s) | Mem: RSS (KB) |
 |:--------:|:-----:|:----------:|:--------------:|:-------------:|:---------------:|:-------------:|
-| c        | 170   | 83         | 0.16           | 829           | 0.01            | 2880          |
-| go       | 123   | 18         | 0.36           | 1416          | 0.60            | 7444          |
-| haskell  | 71    | 6          | 1.37           | 1071          | 0.60            | 4040          |
-| rust     | 125   | 18         | 1.12           | 2578          | 0.16            | 2964          |
-| clojure  | 71    | 0          | 10.29          | 3629          | 37.42           | 259744        |
+| c        | 103   | 15         | 0.11           | 825           | 0.01            | 2960          |
+| go       | 123   | 18         | 0.25           | 1416          | 0.47            | 7880          |
+| haskell  | 71    | 6          | 1.18           | 1071          | 0.48            | 4036          |
+| rust     | 125   | 18         | 0.99           | 2578          | 0.14            | 2940          |
+| clojure  | 71    | 0          | 7.55           | 3629          | 32.82           | 260520        |
 
 ### Baseline
 
 | Language |  LOC  | Complexity | Build time (s) | Exe Size (KB) | 10x Runtime (s) | Mem: RSS (KB) |
 |:--------:|:-----:|:----------:|:--------------:|:-------------:|:---------------:|:-------------:|
-| c        | 5     | 0          | 0.08           | 824           | 0.00            | 2816          |
-| go       | 4     | 0          | 0.15           | 788           | 0.01            | 2920          |
-| haskell  | 4     | 0          | 0.70           | 969           | 0.01            | 3364          |
-| rust     | 3     | 0          | 0.23           | 2557          | 0.01            | 2932          |
-| clojure  | 7     | 0          | 8.30           | 3602          | 19.15           | 94764         |
+| c        | 5     | 0          | 0.07           | 824           | 0.00            | 2928          |
+| go       | 4     | 0          | 0.12           | 788           | 0.00            | 2924          |
+| haskell  | 4     | 0          | 0.59           | 969           | 0.01            | 3400          |
+| rust     | 3     | 0          | 0.19           | 2557          | 0.00            | 2954          |
+| clojure  | 7     | 0          | 7.16           | 3602          | 16.11           | 95444         |
 
 ### Difference: Baseline -> Puzzle
 
 | Language |  LOC  | Complexity | Build time (s) | Exe Size (KB) | 10x Runtime (s) | Mem: RSS (KB) |
 |:--------:|:-----:|:----------:|:--------------:|:-------------:|:---------------:|:-------------:|
-| c        | 165   | 83         | 0.08           | 5             | 0.01            | 64            |
-| go       | 119   | 18         | 0.21           | 628           | 0.59            | 4524          |
-| haskell  | 67    | 6          | 0.67           | 102           | 0.59            | 676           |
-| rust     | 122   | 18         | 0.89           | 21            | 0.15            | 32            |
-| clojure  | 64    | 0.00       | 1.99           | 27            | 18.27           | 164980        |
+| c        | 98    | 15         | 0.04           | 1             | 0.01            | 32            |
+| go       | 119   | 18         | 0.13           | 628           | 0.47            | 4956          |
+| haskell  | 67    | 6          | 0.59           | 102           | 0.47            | 636           |
+| rust     | 122   | 18         | 0.80           | 21            | 0.14            | 14            |
+| clojure  | 64    | 0.00       | 0.39           | 27            | 16.71           | 165076        |
