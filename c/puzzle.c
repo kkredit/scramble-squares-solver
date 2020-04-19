@@ -54,8 +54,8 @@ typedef placed_piece_t board_t[9];
 
 /******************************************************************************
  *                                                      Function declarations */
-bool board_is_legal(board_t board);
-void print_board(board_t board, bool is_solution);
+bool board_is_legal(board_t board, int index);
+void print_board(board_t board);
 void recursive_check(board_t board);
 
 
@@ -81,15 +81,7 @@ unsigned long num_boards_checked = 0;
 int main(void) {
 
     board_t board = {
-        {-1, 0},
-        {-1, 0},
-        {-1, 0},
-        {-1, 0},
-        {-1, 0},
-        {-1, 0},
-        {-1, 0},
-        {-1, 0},
-        {-1, 0},
+        {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0},
     };
 
     printf("Working on the solution to the puzzle...\n");
@@ -128,12 +120,12 @@ void recursive_check(board_t board){
             // For each rotation
             for(int rot_pos = 0; rot_pos < 4; rot_pos++){
                 // Add to board, check if legal, follow logic outlined above
-                // RETURN ONLY IF IS COMPELTE DEAD END
-                board[9 - moves_left].set_index = index;
-                board[9 - moves_left].rotation  = rot_pos;
-                if(board_is_legal(board)){
+                int place_index = 9 - moves_left;
+                board[place_index].set_index = index;
+                board[place_index].rotation  = rot_pos;
+                if(board_is_legal(board, place_index)){
                     if(1 == moves_left){
-                        print_board(board, true);
+                        print_board(board);
                     }
                     else {
                         board_t board_copy;
@@ -146,90 +138,29 @@ void recursive_check(board_t board){
     }
 }
 
-bool board_is_legal(board_t board){
+// Only check latest piece
+bool board_is_legal(board_t board, int index){
     num_boards_checked++;
-    // Vertical edge matching checks
-    if(-1 != board[0].set_index
-       && -1 != board[1].set_index
-       && (pieces_set[board[0].set_index][(1 + board[0].rotation) % 4]
-           != -pieces_set[board[1].set_index][(3 + board[1].rotation) % 4])){
-        return false;
+    bool legal = true;
+
+    bool top_row = index < 3;
+    bool left_col = 0 == index % 3;
+    const piece_t *this_p = &pieces_set[board[index].set_index];
+    const int this_r = board[index].rotation;
+    if(!top_row) {
+        const piece_t *above_p = &pieces_set[board[index - 3].set_index];
+        const int above_r = board[index - 3].rotation;
+        legal &= ((*above_p)[(2 + above_r) % 4] == -(*this_p)[(0 + this_r) % 4]);
     }
-    if(-1 != board[1].set_index
-       && -1 != board[2].set_index
-       && (pieces_set[board[1].set_index][(1 + board[1].rotation) % 4]
-           != -pieces_set[board[2].set_index][(3 + board[2].rotation) % 4])){
-        return false;
+    if(!left_col) {
+        const piece_t *left_p = &pieces_set[board[index - 1].set_index];
+        const int left_r = board[index - 1].rotation;
+        legal &= ((*left_p)[(1 + left_r) % 4] == -(*this_p)[(3 + this_r) % 4]);
     }
-    if(-1 != board[3].set_index
-       && -1 != board[4].set_index
-       && (pieces_set[board[3].set_index][(1 + board[3].rotation) % 4]
-           != -pieces_set[board[4].set_index][(3 + board[4].rotation) % 4])){
-        return false;
-    }
-    if(-1 != board[4].set_index
-       && -1 != board[5].set_index
-       && (pieces_set[board[4].set_index][(1 + board[4].rotation) % 4]
-           != -pieces_set[board[5].set_index][(3 + board[5].rotation) % 4])){
-        return false;
-    }
-    if(-1 != board[6].set_index
-       && -1 != board[7].set_index
-       && (pieces_set[board[6].set_index][(1 + board[6].rotation) % 4]
-           != -pieces_set[board[7].set_index][(3 + board[7].rotation) % 4])){
-        return false;
-    }
-    if(-1 != board[7].set_index
-       && -1 != board[8].set_index
-       && (pieces_set[board[7].set_index][(1 + board[7].rotation) % 4]
-           != -pieces_set[board[8].set_index][(3 + board[8].rotation) % 4])){
-        return false;
-    }
-    // Horizontal edge matching checks
-    if(-1 != board[0].set_index
-       && -1 != board[3].set_index
-       && (pieces_set[board[0].set_index][(2 + board[0].rotation) % 4]
-           != -pieces_set[board[3].set_index][(0 + board[3].rotation) % 4])){
-        return false;
-    }
-    if(-1 != board[1].set_index
-       && -1 != board[4].set_index
-       && (pieces_set[board[1].set_index][(2 + board[1].rotation) % 4]
-           != -pieces_set[board[4].set_index][(0 + board[4].rotation) % 4])){
-        return false;
-    }
-    if(-1 != board[2].set_index
-       && -1 != board[5].set_index
-       && (pieces_set[board[2].set_index][(2 + board[2].rotation) % 4]
-           != -pieces_set[board[5].set_index][(0 + board[5].rotation) % 4])){
-        return false;
-    }
-    if(-1 != board[3].set_index
-       && -1 != board[6].set_index
-       && (pieces_set[board[3].set_index][(2 + board[3].rotation) % 4]
-           != -pieces_set[board[6].set_index][(0 + board[6].rotation) % 4])){
-        return false;
-    }
-    if(-1 != board[4].set_index
-       && -1 != board[7].set_index
-       && (pieces_set[board[4].set_index][(2 + board[4].rotation) % 4]
-           != -pieces_set[board[7].set_index][(0 + board[7].rotation) % 4])){
-        return false;
-    }
-    if(-1 != board[5].set_index
-       && -1 != board[8].set_index
-       && (pieces_set[board[5].set_index][(2 + board[5].rotation) % 4]
-           != -pieces_set[board[8].set_index][(0 + board[8].rotation) % 4])){
-        return false;
-    }
-    // If passed all checks, is valid board state
-    return true;
+    return legal;
 }
 
-void print_board(board_t board, bool is_solution){
-    if(is_solution){
-        printf("\nSOLUTION\n");
-    }
+void print_board(board_t board){
     printf("%d:%d  %d:%d  %d:%d\n%d:%d  %d:%d  %d:%d\n%d:%d  %d:%d  %d:%d\n\n",
            board[0].set_index, board[0].rotation,
            board[1].set_index, board[1].rotation,
@@ -241,4 +172,3 @@ void print_board(board_t board, bool is_solution){
            board[7].set_index, board[7].rotation,
            board[8].set_index, board[8].rotation);
 }
-
