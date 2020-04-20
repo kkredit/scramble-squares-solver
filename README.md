@@ -8,9 +8,9 @@ A puzzle solving program written in a variety of languages.
 
 ## Motivation
 
-One holiday spent at a friend's house, I found a puzzle with a simple premise--arrange these nine
-pieces so all the insects line up. I spent hours with it, and got within one piece of a solution at
-least ten different ways, but could not solve it. Time to write a program.
+One holiday at a friend's house, I found a puzzle with a simple premise--arrange these nine pieces
+so all the edges line up. I spent hours with it, and got within one piece of a solution at least ten
+different ways, but could not solve it. Time to write a program.
 
 The puzzle was of the "Scramble Squares" variety. You can find it
 [here](https://www.puzzlewarehouse.com/Insects-10028ss.html) and
@@ -27,21 +27,46 @@ Here's a picture of what it looks like unsolved:
 
 ## Solutions
 
-This program was originally written in C. During an exploration of programming languages in 2020, I
-added solutions in Go, Haskell, Rust, and Clojure.
+This program was originally written in C--_not_ because that's the best language for the problem,
+but because that was my strongest language at the time. In order to get practice with new languages,
+I added solutions in Go, Haskell, Rust, and Clojure.
 
-Each implementation uses the same high-level algorithm. Data structures represent pieces as
-arrangements of sides and boards as arrangements of pieces. The algorithm recursively places each
-possible next piece in the next spot at each possible rotation. If that placement is illegal, it
-stops recurring down that tree. When it has placed all nine pieces successfully, it has found a
-solution. Solutions are printed out as (piece, rotation) tuples. The algorithm doesn't account for
-rotations, so it finds four solutions.
+Each implementation uses the same high-level algorithm. Data structures represent boards as
+arrangements of pieces and pieces as arrangements of sides. The algorithm places one piece at a time
+with each possible rotation. If the resulting board position is valid, it recursively places the
+next piece. When it has placed all nine pieces successfully, it has found a solution. Solutions are
+printed out as `(piece, rotation)` tuples. The algorithm doesn't account for rotations, so it finds
+four solutions.
+
+What follows is a few notes on what makes each solution unique.
+
+<!--
+TODO: for blog post, create new repo designed to collect solutions!
+
+- Update benchmark.sh to collect stats and name champions for each language
+  - code golf
+  - execution time
+  - memory usage
+- Maybe document all the algorithms employed
+- Accept all solutions, but require standard based on benchmark.sh expectations (e.g. make)
+- Probably standardize output so can automatically check correctness
+-->
 
 ### C
 
 C is not the simplest language for this problem, but it is the language in which I have the most
-experience. Though it is actually shorter and less complex than the Go and Rust solutions, it did
-require me to do more of the mental lifting.
+experience. Though it is actually shorter and less complex than the Go and Rust solutions, that is
+probably only because of my familiarity with the language. It does require the programmer to do more
+of the mental lifting.
+
+The memory usage usage is worth some discussion. I am pleased that my intuition guided me to make
+copies of the board at each level. Since C allows mutation and low level memory handling, one may be
+tempted to have a global copy of the board on which to add and remove pieces; making copies of the
+board on the stack in a recursive function seems dangerous. However, since this implementation is
+depth-first and bounded at nine layers, even if the program checks tens of thousands of board
+positions, there are only ever nine boards on the stack at once, making the cost trivial. Even in a
+single thread, correctly managing mutation can be difficult. As we'll see later, Rust addresses this
+through ownership and borrowing, and as Haskell and Clojure address it by making mutation illegal.
 
 ### Go
 
@@ -136,4 +161,4 @@ themselves.
 | go       | 119   | 18         | 0.12           | 628           | 0.43            | 4748          |
 | haskell  | 67    | 6          | 0.50           | 102           | 0.45            | 632           |
 | rust     | 122   | 18         | 0.75           | 21            | 0.13            | 76            |
-| clojure  | 64    | 0.00       | 0.20           | 27            | 16.02           | 159568        |
+| clojure  | 64    | 0          | 0.20           | 27            | 16.02           | 159568        |
