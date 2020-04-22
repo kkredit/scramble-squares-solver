@@ -71,16 +71,22 @@ depth-first and bounded at nine layers, even if the program checks tens of thous
 positions, there are only ever nine boards on the stack at once, making the cost trivial. Even in a
 single thread, correctly managing mutation can be difficult. As we'll see later, Rust addresses this
 through ownership and borrowing, and as Haskell and Clojure address it by making mutation illegal.
+<!-- trim down -->
 
 ### Go
 
 The Go solution uses Goroutines to search for a solution in parallel. It was a fairly
 straightforward port from C, though methods made the code easier to write and understand.
+<!-- wanted to use struct methods, so got fancier and copied complete boards -->
+<!-- does not print pretty -->
+<!-- looking back, still feels pretty low level -->
 
 ### Haskell
 
 The Haskell solution is quite elegant. It is far simpler, and actually runs in approximately the
 same time as the Go solution.
+<!-- most elegant in my opinion -->
+<!-- implemented breadth-first search, kind of by accident -->
 
 ### Rust
 
@@ -97,12 +103,16 @@ exactly. The pattern matching and functional-_lite_ capability felt like Haskell
 functionally in Rust is not natural, but having the capability when it is particularly convenient is
 really nice.
 -->
+<!-- edit -->
 
 ### Clojure
 
 The Clojure solution is a direct port of the Haskell solution. I never quite grokked Clojure's
 REPL-oriented development workflow. Despite the awkwardness of my Clojure style, I think its syntax
 is slightly more understandable, if not truly pleasant.
+<!-- solution also feels elegant, similar to haskell -->
+<!-- couldn't get the workflow down, so debugging was hard -->
+<!-- never has an auto-formatter been so necessary -->
 
 ## Benchmarks
 
