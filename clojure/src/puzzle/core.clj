@@ -1,5 +1,5 @@
 ;; core.clj -- puzzle.core
-;; Solves a scramble-squares puzzle using ~idiomatic~ hacked together Clojure
+;; Solves a scramble-squares puzzle using idiomatic(?) Clojure
 ;; Copyright (c) 2020, Kevin Kredit
 ;; License MIT
 
@@ -48,7 +48,9 @@
   "Solve a scramble squares puzzle."
   []
   (println "Working on it!")
-  (let [printBoard (fn [board] (println (str " --> " (pr-str (map #(str (:name %) ":" (:rot %)) board)))))
+  (let [printBoard (fn [board] (->> board
+                                    (map #(apply str (:name %) ":" (:rot %) ""))
+                                    (println)))
         makePiece (fn [n i1 e1 i2 e2 i3 e3 i4 e4]
                     (let [e #(do {:insect %1 :end %2})]
                       {:name n, :rot 0, :top (e i1 e1), :right (e i2 e2), :bottom (e i3 e3), :left (e i4 e4)}))
