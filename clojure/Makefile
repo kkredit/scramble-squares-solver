@@ -13,12 +13,15 @@ SOURCES		:= $(wildcard $(SRCDIR)/*.clj)
 JARS		:= $(LEIN_BINDIR)/$(TARGET)-$(VERSION).jar
 BINARIES	:= $(BINDIR)/$(TARGET)
 
-.PHONY: all clean
+.PHONY: all clean format
 
 all: $(BINARIES)
 
 clean:
 	rm -rf $(BINDIR) $(LEIN_BINDIR)
+
+format:
+	lein cljfmt fix
 
 $(JARS): $(SOURCES)
 	lein uberjar
