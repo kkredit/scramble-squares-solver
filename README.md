@@ -121,7 +121,8 @@ workflow. Despite the workflow being awkard and frustrating, the final product i
 to Haskell's. The data types are essentially the same, though Clojure's internal translation between collection types
 ("seqable" types) meant that I'm not sure how the data is actually stored at various parts of the program.
 Frustratingly, changing between a list and a vector can cause segementation faults (even though they all get converted
-to sequences during functional operations?).
+to sequences during functional operations?). Unfortunately, I did not pick up enough of the language to appreciate its
+strong macro system and concurrency features.
 
 To develop well with Clojure, as with any Lisp, requires a particular development setup. With no other language has an
 [autoformatter](https://github.com/weavejester/cljfmt) been so necessary. I didn't quite achieve the proper workflow,
@@ -129,26 +130,17 @@ but I couldn't have written this program without VSCode's [Clojure
 plugin](https://marketplace.visualstudio.com/items?itemName=avli.clojure) or this lifesaving [bracket colorizing
 tool](https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer-2).
 
-<!-- solution also feels elegant, similar to haskell -->
-<!-- couldn't get the workflow down, so debugging was hard -->
-<!-- never has an auto-formatter been so necessary -->
-
 ## Benchmarks
 
 Note that the implementation in each language is relatively basic; none have been particularly optimized for size or
-performance.
-
-LOC and Complexity are reported by [scc](https://github.com/boyter/scc). The C application is built with static linkage.
-The rest are with whatever is default.
+performance. LOC and Complexity are reported by [scc](https://github.com/boyter/scc). The C application is built with
+static linkage. The rest are with whatever is default.
 
 The LOC and complexity comparisons are not entirely fair, as each program implements a slightly different set of
 features. For example, the Go solution implements parallelism, which is trivial in Go but would add considerable
 complexity to some other languages. The Rust solution implements nicely-formatted solution print via `fmt::Display for
 Board`, which alone accounts for 27 LOC and 7 points of complexity. For a fairer comparison, each language should
-implement the same features.
-
-The tool also fails to measure the complexity of the Clojure solution, which really should be about the same as the
-Haskell solution. Consider from the [scc
+implement the same features. Consider also from the [scc
 README](https://github.com/boyter/scc/blob/850e8be775dac636f9da5864b26974b123269bd2/README.md):
 
 >The complexity estimate is really just a number that is only comparable to files in the same language. It should not be
@@ -158,11 +150,14 @@ Because some languages don't have loops and instead use recursion they can have 
 they are less complex? Probably not, but the tool cannot see this because it does not build an AST of the code as it
 only scans through it.
 
+The tool also fails to measure the complexity of the Clojure solution, which really should be about the same as the
+Haskell solution.
+
 There are three sets of benchmarks: the [Puzzle](#puzzle) benchmarks run the puzzle solving applications. The
 [Baseline](#baseline) benchmarks run a dummy application that performs each language's version of `return 0;`. The
 [Difference](#difference-baseline---puzzle) benchmarks are calculated as `Puzzle - Baseline`. The purpose of these
-separate sets is to identify the benchmark values for each version that are due to the application vs due to the
-languages and toolsets themselves.
+separate sets is to identify what portion of each metric is due to the application vs due to the languages and toolsets
+themselves.
 
 ### Puzzle
 
