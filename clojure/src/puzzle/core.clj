@@ -38,18 +38,14 @@
                                (last)))
         newStateWithRotation (fn [n] {:placed (conj (:placed state) (spunPiece n)),
                                       :unplaced (filter #(not= p %) (:unplaced state))})]
-    (map newStateWithRotation (into [] (range 1 5)))))
+    (map newStateWithRotation (range 1 5))))
 
 (defn solutions [state]
   (cond
     (= 0 (count (:unplaced state))) [(:placed state)]
     :else
-    (let [nextStates (fn [] (->> (:unplaced state)
-                                 (mapcat #(addWithEachRotation state %))
-                                 (into [])))
-          nextLegalStates (fn [] (->> (nextStates)
-                                      (filter #(boardIsLegal (:placed %)))
-                                      (into [])))]
+    (let [nextStates (fn [] (mapcat #(addWithEachRotation state %) (:unplaced state)))
+          nextLegalStates (fn [] (filter #(boardIsLegal (:placed %)) (nextStates)))]
       (mapcat solutions (nextLegalStates)))))
 
 (defn makePiece [n i1 e1 i2 e2 i3 e3 i4 e4]
