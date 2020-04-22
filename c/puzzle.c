@@ -3,7 +3,7 @@
  *
  * \brief Solves a scramble-squares puzzle
  *
- * \copyright Copyright (c) 2019, Kevin Kredit.
+ * \copyright Copyright (c) 2020, Kevin Kredit.
  */
 
 
@@ -95,15 +95,7 @@ int main(void) {
 /******************************************************************************
  *                                                         Internal functions */
 void recursive_check(board_t board, int current_index){
-    // Each level of recursion adds each possible next piece
-    // after adding, check for legal state
-    // if legal
-    //      if full board
-    //          print solution_num
-    //      else
-    //          recur next level
-
-    // Determine unplaced pieces from pieces_set
+    // Determine which pieces are still available
     bool unplaced_indices[9] = {true, true, true, true, true, true, true, true, true};
     for(int i = 0; i < 9; i++){
         if(-1 != board[i].set_index){
@@ -111,7 +103,7 @@ void recursive_check(board_t board, int current_index){
         }
     }
 
-    // For each possible move
+    // For each available piece
     for(int index = 0; index < 9; index++){
         // If unplaced
         if(unplaced_indices[index]){
