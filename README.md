@@ -4,7 +4,15 @@ A puzzle solving program written in a variety of languages.
 
 - [Motivation](#motivation)
 - [Solutions](#solutions)
+  - [C](#c)
+  - [Go](#go)
+  - [Haskell](#haskell)
+  - [Rust](#rust)
+  - [Clojure](#clojure)
 - [Benchmarks](#benchmarks)
+  - [Puzzle](#puzzle)
+  - [Baseline](#baseline)
+  - [Difference: Baseline -> Puzzle](#difference-baseline---puzzle)
 
 ## Motivation
 
@@ -40,7 +48,7 @@ so it finds four solutions.
 What follows is a few notes on what makes each solution unique.
 
 <!--
-TODO: for blog post, create new repo designed to collect solutions!
+For blog post, create new repo designed to collect solutions!
 
 - Update benchmark.sh to collect stats and name champions for each language
   - code golf
@@ -52,61 +60,74 @@ TODO: for blog post, create new repo designed to collect solutions!
   - As part of established rules
   - Probably need to make rules about libraries too. Only standard libraries? Only for printing and
       basic data types?
-  - If competing for sloc, must use standardized formatting tool?
+  - If competing for lines of code, must use standardized formatting tool?
 -->
 
 ### C
 
 C is not the simplest language for this problem, but it is the language in which I have the most experience. Though it
 is actually shorter and less complex than the Go and Rust solutions, that is probably only because of my familiarity
-with the language. It does require the programmer to do more of the mental lifting.
+with the language. There is less abstraction of the problem space and it requires the programmer to do more of the
+mental lifting.
 
-The memory usage usage is worth some discussion. I am pleased that my intuition guided me to make copies of the board at
-each level. Since C allows mutation and low level memory handling, one may be tempted to have a global copy of the board
-on which to add and remove pieces; making copies of the board on the stack in a recursive function seems dangerous.
-However, since this implementation is depth-first and bounded at nine layers, even if the program checks tens of
-thousands of board positions, there are only ever nine boards on the stack at once, making the cost trivial. Even in a
-single thread, correctly managing mutation can be difficult. As we'll see later, Rust addresses this through ownership
-and borrowing, and as Haskell and Clojure address it by making mutation illegal. <!-- trim down -->
+The memory usage is worth some discussion. I am pleased that my intuition guided me to make copies of the board and use
+recursion. Since C programs often operate in memory constrained environments, a C developer may be tempted to modify a
+single board structure in place using a traditional loop. However, mutation is easy to get wrong (as Rust makes clear),
+and recursion lends itself to simpler code. Since the algorithm uses depth-first search and peaks at nine layers, there
+is a maximum of nine boards and stack frames present at any time, making the actual memory cost both bounded and low.
 
 ### Go
 
-The Go solution uses Goroutines to search for a solution in parallel. It was a fairly straightforward port from C,
-though methods made the code easier to write and understand.
+The Go solution was a fairly straightforward port from C, though easier management of dynamic objects (i.e., arrays) and
+the ability to lay methods onto structs allowed for higher abstraction. Though I did appreciate simpler memory
+management, the lack of a deep copy ability in the standard libraries was annoying. Using nine lines of the program to
+make a copy of the board struct seems like a waste.
 
-<!-- wanted to use struct methods, so got fancier and copied complete boards -->
-<!-- does not print pretty -->
-<!-- looking back, still feels pretty low level -->
+Parallelization was the highlight of the Go solution. Even though the search algorithm is trivially parallizable--thanks
+in part again to making board copies instead of mutating state--implementing threads in C would have been an
+undertaking. In Go, once I had the single threaded solution, I had it parallelized in 10 minutes and with the addition
+of only 15 lines of code! (See the commit
+[here](https://github.com/kkredit/scramble-squares-solver/commit/f150b0701489af9bce75ea14367c53968f05b509).)
 
 ### Haskell
 
-The Haskell solution is quite elegant. It is far simpler, and actually runs in approximately the same time as the Go
-solution.
+The Haskell solution is quite elegant. It is far simpler, and runs in approximately the same time as the Go solution.
+Since this was my first time diving into a purely functional language (though perhaps I should say "primarily"
+functional language), adapting to the functional mindset was some work. [_Learn You a
+Haskell_](http://learnyouahaskell.com/) was an excellent resource. It helped that I was already using immutable data and
+recursion. I also appreciated Haskell's strong types. They make it clear when you're doing something wrong, and in a few
+cases, type signatures even helped me infer Haskell syntax.
 
-<!-- most elegant in my opinion -->
-<!-- implemented breadth-first search, kind of by accident -->
+An interesting point about the Haskell solution is that I accidentally wound up with a breadth-first search. The
+algorithm is to map next possible states over the set of unplaced peices, filter on legal board positions, and recur. I
+struggle to think of exactly how to implement a depth-first search in Haskell. Developing that algorithm would be a good
+exercise.
 
 ### Rust
 
-The Rust solution feels like a mix of the C, Go, and Haskell solutions. It's memory usage and macro system felt like C,
-though improved. It's object methods and overall structure felt like Go. The functional-_lite_ features felt like
-Haskell, though clunky.
+The Rust solution felt like a mix of the C, Go, and Haskell solutions. Its memory usage and macro system felt like C,
+though decidedly more robust. It's object methods and overall program structure felt like Go; it was procedural with a
+dash of OO, and allowed for a nice level of abstraction. Rust's functional-_lite_ features using iterators were a little
+clunky, though still appreciated. Though I didn't use pattern matching, it is nice to have.
 
-<!--
-The Rust solution feels like a mix of the C, Go, and Haskell solutions. It's memory usage felt like C. Of course, Rust
-is safe, but the way to think about memory felt the same. Rust's macro system, similarly, is more powerful yet has a
-familiar feel. It's object methods felt like Go. The overall structure of the program was extremely similar, and the LOC
-and Complexity metrics match almost exactly. The pattern matching and functional-_lite_ capability felt like Haskell.
-Programming functionally in Rust is not natural, but having the capability when it is particularly convenient is really
-nice.
--->
-<!-- edit -->
+A nice feature of the Rust implementation is its solution printing. I decided to implement the `fmt::Display` trait,
+since it seemed like the Rust-y thing to do. This added several lines of code, but got me to use the macro system and
+resulted in the nicest printout of any language.
 
 ### Clojure
 
 The Clojure solution is a direct port of the Haskell solution. I never quite grokked Clojure's REPL-oriented development
-workflow. Despite the awkwardness of my Clojure style, I think its syntax is slightly more understandable, if not truly
-pleasant.
+workflow. Despite the workflow being awkard and frustrating, the final product is very nice. The algorithm is identical
+to Haskell's. The data types are essentially the same, though Clojure's internal translation between collection types
+("seqable" types) meant that I'm not sure how the data is actually stored at various parts of the program.
+Frustratingly, changing between a list and a vector can cause segementation faults (even though they all get converted
+to sequences during functional operations?).
+
+To develop well with Clojure, as with any Lisp, requires a particular development setup. With no other language has an
+[autoformatter](https://github.com/weavejester/cljfmt) been so necessary. I didn't quite achieve the proper workflow,
+but I couldn't have written this program without VSCode's [Clojure
+plugin](https://marketplace.visualstudio.com/items?itemName=avli.clojure) or this lifesaving [bracket colorizing
+tool](https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer-2).
 
 <!-- solution also feels elegant, similar to haskell -->
 <!-- couldn't get the workflow down, so debugging was hard -->
@@ -149,9 +170,9 @@ languages and toolsets themselves.
 |:--------:|:-----:|:----------:|:--------------:|:-------------:|:---------------:|:-------------:|
 | c        | 100   | 15         | 0.11           | 825           | 0.01            | 2980          |
 | go       | 123   | 18         | 0.26           | 1416          | 0.44            | 7572          |
-| haskell  | 71    | 6          | 1.13           | 1071          | 0.46            | 4012          |
+| haskell  | 70    | 6          | 1.13           | 1071          | 0.46            | 4012          |
 | rust     | 125   | 18         | 0.95           | 2578          | 0.13            | 2868          |
-| clojure  | 56    | 0          | 7.55           | 3629          | 32.97           | 255240        |
+| clojure  | 58    | 0          | 7.55           | 3629          | 32.97           | 255240        |
 
 ### Baseline
 
@@ -169,6 +190,6 @@ languages and toolsets themselves.
 |:--------:|:-----:|:----------:|:--------------:|:-------------:|:---------------:|:-------------:|
 | c        | 95    | 15         | 0.03           | 1             | 0.01            | 64            |
 | go       | 119   | 18         | 0.12           | 628           | 0.43            | 4748          |
-| haskell  | 67    | 6          | 0.50           | 102           | 0.45            | 632           |
+| haskell  | 66    | 6          | 0.50           | 102           | 0.45            | 632           |
 | rust     | 122   | 18         | 0.75           | 21            | 0.13            | 76            |
-| clojure  | 49    | 0          | 0.20           | 27            | 16.02           | 159568        |
+| clojure  | 51    | 0          | 0.20           | 27            | 16.02           | 159568        |
