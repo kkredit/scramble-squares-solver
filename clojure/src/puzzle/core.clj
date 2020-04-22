@@ -15,24 +15,21 @@
 (defn boardIsLegal [board]
   (cond
     (> 2 (count board)) true
-    :else
-    (let [pos (- (count board) 1)
-          topRow (< pos 3)
-          leftCol (= 0 (mod pos 3))
-          this (last board)
-          above (fn [pos] (relativePiece #(> 3 %) 3 board pos))
-          leftTo (fn [pos] (relativePiece #(= 0 (mod % 3)) 1 board pos))
-          edgesMatch #(and (= (:insect %1) (:insect %2)) (not= (:end %1) (:end %2)))
-          matchesAbove #(edgesMatch (:top this) (:bottom (above pos)))
-          matchesLeft #(edgesMatch (:left this) (:right (leftTo pos)))]
-      (and (or topRow (matchesAbove)) (or leftCol (matchesLeft))))))
-
-(defn rotatePiece [p]
-  {:name (:name p), :rot (mod (inc (:rot p)) 4),
-   :top (:left p), :right (:top p), :bottom (:right p), :left (:bottom p)})
+    :else (let [pos (- (count board) 1)
+                topRow (< pos 3)
+                leftCol (= 0 (mod pos 3))
+                this (last board)
+                above (fn [pos] (relativePiece #(> 3 %) 3 board pos))
+                leftTo (fn [pos] (relativePiece #(= 0 (mod % 3)) 1 board pos))
+                edgesMatch #(and (= (:insect %1) (:insect %2)) (not= (:end %1) (:end %2)))
+                matchesAbove #(edgesMatch (:top this) (:bottom (above pos)))
+                matchesLeft #(edgesMatch (:left this) (:right (leftTo pos)))]
+            (and (or topRow (matchesAbove)) (or leftCol (matchesLeft))))))
 
 (defn addWithEachRotation [state p]
-  (let [spunPiece (fn [n] (->> p
+  (let [rotatePiece (fn [p] {:name (:name p), :rot (mod (inc (:rot p)) 4),
+                             :top (:left p), :right (:top p), :bottom (:right p), :left (:bottom p)})
+        spunPiece (fn [n] (->> p
                                (iterate rotatePiece)
                                (take n)
                                (last)))
@@ -43,23 +40,19 @@
 (defn solutions [state]
   (cond
     (= 0 (count (:unplaced state))) [(:placed state)]
-    :else
-    (let [nextStates (fn [] (mapcat #(addWithEachRotation state %) (:unplaced state)))
-          nextLegalStates (fn [] (filter #(boardIsLegal (:placed %)) (nextStates)))]
-      (mapcat solutions (nextLegalStates)))))
-
-(defn makePiece [n i1 e1 i2 e2 i3 e3 i4 e4]
-  (let [e #(do {:insect %1 :end %2})]
-    {:name n, :rot 0, :top (e i1 e1), :right (e i2 e2), :bottom (e i3 e3), :left (e i4 e4)}))
-
-(defn printBoard [board]
-  (println (str " --> " (pr-str (map #(str (:name %) ":" (:rot %)) board)))))
+    :else (let [nextStates (fn [] (mapcat #(addWithEachRotation state %) (:unplaced state)))
+                nextLegalStates (fn [] (filter #(boardIsLegal (:placed %)) (nextStates)))]
+            (mapcat solutions (nextLegalStates)))))
 
 (defn -main
   "Solve a scramble squares puzzle."
   []
   (println "Working on it!")
-  (let [initState {:placed [], :unplaced [(makePiece 0 'dragonfly 'tail, 'ant 'head, 'beetle 'tail, 'mantis 'head)
+  (let [printBoard (fn [board] (println (str " --> " (pr-str (map #(str (:name %) ":" (:rot %)) board)))))
+        makePiece (fn [n i1 e1 i2 e2 i3 e3 i4 e4]
+                    (let [e #(do {:insect %1 :end %2})]
+                      {:name n, :rot 0, :top (e i1 e1), :right (e i2 e2), :bottom (e i3 e3), :left (e i4 e4)}))
+        initState {:placed [], :unplaced [(makePiece 0 'dragonfly 'tail, 'ant 'head, 'beetle 'tail, 'mantis 'head)
                                           (makePiece 1 'dragonfly 'tail, 'ant 'tail, 'beetle 'head, 'mantis 'tail)
                                           (makePiece 2 'dragonfly 'tail, 'mantis 'head, 'beetle 'tail, 'ant 'head)
                                           (makePiece 3 'dragonfly 'tail, 'ant 'head, 'mantis 'head, 'ant 'tail)
