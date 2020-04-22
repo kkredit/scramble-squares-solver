@@ -50,6 +50,10 @@ TODO: for blog post, create new repo designed to collect solutions!
 - Maybe document all the algorithms employed
 - Accept all solutions, but require standard based on benchmark.sh expectations (e.g. make)
 - Probably standardize output so can automatically check correctness
+  - As part of established rules
+  - Probably need to make rules about libraries too. Only standard libraries? Only for printing and
+      basic data types?
+  - If competing for sloc, must use standardized formatting tool?
 -->
 
 ### C
@@ -141,7 +145,7 @@ themselves.
 | go       | 123   | 18         | 0.26           | 1416          | 0.44            | 7572          |
 | haskell  | 71    | 6          | 1.13           | 1071          | 0.46            | 4012          |
 | rust     | 125   | 18         | 0.95           | 2578          | 0.13            | 2868          |
-| clojure  | 71    | 0          | 7.55           | 3629          | 32.97           | 255240        |
+| clojure  | 56    | 0          | 7.55           | 3629          | 32.97           | 255240        |
 
 ### Baseline
 
@@ -161,4 +165,4 @@ themselves.
 | go       | 119   | 18         | 0.12           | 628           | 0.43            | 4748          |
 | haskell  | 67    | 6          | 0.50           | 102           | 0.45            | 632           |
 | rust     | 122   | 18         | 0.75           | 21            | 0.13            | 76            |
-| clojure  | 64    | 0          | 0.20           | 27            | 16.02           | 159568        |
+| clojure  | 49    | 0          | 0.20           | 27            | 16.02           | 159568        |
