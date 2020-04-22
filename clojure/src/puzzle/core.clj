@@ -27,7 +27,9 @@
             (and (or topRow (matchesAbove)) (or leftCol (matchesLeft))))))
 
 (defn addWithEachRotation [state p]
-  (let [rotatePiece (fn [p] {:name (:name p), :rot (mod (inc (:rot p)) 4),
+  (let [rotatePiece (fn [p] {:name (:name p), :rot (-> (:rot p)
+                                                       (inc)
+                                                       (mod 4)),
                              :top (:left p), :right (:top p), :bottom (:right p), :left (:bottom p)})
         spunPiece (fn [n] (->> p
                                (iterate rotatePiece)
