@@ -4,15 +4,8 @@ A puzzle solving program written in a variety of languages.
 
 - [Motivation](#motivation)
 - [Solutions](#solutions)
-  - [C](#c)
-  - [Go](#go)
-  - [Haskell](#haskell)
-  - [Rust](#rust)
-  - [Clojure](#clojure)
 - [Benchmarks](#benchmarks)
-  - [Puzzle](#puzzle)
-  - [Baseline](#baseline)
-  - [Difference: Baseline -> Puzzle](#difference-baseline---puzzle)
+- [Similar Projects](#similar-projects)
 
 ## Motivation
 
@@ -143,12 +136,12 @@ Board`, which alone accounts for 27 LOC and 7 points of complexity. For a fairer
 implement the same features. Consider also from the [scc
 README](https://github.com/boyter/scc/blob/850e8be775dac636f9da5864b26974b123269bd2/README.md):
 
->The complexity estimate is really just a number that is only comparable to files in the same language. It should not be
-used to compare languages directly without weighting them. The reason for this is that its calculated by looking for
-branch and loop statements in the code and incrementing a counter for that file.  
-Because some languages don't have loops and instead use recursion they can have a lower complexity count. Does this mean
-they are less complex? Probably not, but the tool cannot see this because it does not build an AST of the code as it
-only scans through it.
+> The complexity estimate is really just a number that is only comparable to files in the same language. It should not be
+> used to compare languages directly without weighting them. The reason for this is that its calculated by looking for
+> branch and loop statements in the code and incrementing a counter for that file.  
+> Because some languages don't have loops and instead use recursion they can have a lower complexity count. Does this mean
+> they are less complex? Probably not, but the tool cannot see this because it does not build an AST of the code as it
+> only scans through it.
 
 The tool also fails to measure the complexity of the Clojure solution, which really should be about the same as the
 Haskell solution.
@@ -161,30 +154,44 @@ themselves.
 
 ### Puzzle
 
-| Language |  LOC  | Complexity | Build time (s) | Exe Size (KB) | 10x Runtime (s) | Mem: RSS (KB) |
-|:--------:|:-----:|:----------:|:--------------:|:-------------:|:---------------:|:-------------:|
-| c        | 100   | 15         | 0.11           | 825           | 0.01            | 2980          |
-| go       | 123   | 18         | 0.26           | 1416          | 0.44            | 7572          |
-| haskell  | 70    | 6          | 1.13           | 1071          | 0.46            | 4012          |
-| rust     | 125   | 18         | 0.95           | 2578          | 0.13            | 2868          |
-| clojure  | 58    | 0          | 7.55           | 3629          | 32.97           | 255240        |
+| Language | LOC | Complexity | Build time (s) | Exe Size (KB) | 10x Runtime (s) | Mem: RSS (KB) |
+| :------: | :-: | :--------: | :------------: | :-----------: | :-------------: | :-----------: |
+|    c     | 100 |     15     |      0.11      |      825      |      0.01       |     2980      |
+|    go    | 123 |     18     |      0.26      |     1416      |      0.44       |     7572      |
+| haskell  | 70  |     6      |      1.13      |     1071      |      0.46       |     4012      |
+|   rust   | 125 |     18     |      0.95      |     2578      |      0.13       |     2868      |
+| clojure  | 58  |     0      |      7.55      |     3629      |      32.97      |    255240     |
 
 ### Baseline
 
-| Language |  LOC  | Complexity | Build time (s) | Exe Size (KB) | 10x Runtime (s) | Mem: RSS (KB) |
-|:--------:|:-----:|:----------:|:--------------:|:-------------:|:---------------:|:-------------:|
-| c        | 5     | 0          | 0.08           | 824           | 0.00            | 2916          |
-| go       | 4     | 0          | 0.14           | 788           | 0.01            | 2824          |
-| haskell  | 4     | 0          | 0.63           | 969           | 0.01            | 3380          |
-| rust     | 3     | 0          | 0.20           | 2557          | 0.00            | 2792          |
-| clojure  | 7     | 0          | 7.35           | 3602          | 16.95           | 95672         |
+| Language | LOC | Complexity | Build time (s) | Exe Size (KB) | 10x Runtime (s) | Mem: RSS (KB) |
+| :------: | :-: | :--------: | :------------: | :-----------: | :-------------: | :-----------: |
+|    c     |  5  |     0      |      0.08      |      824      |      0.00       |     2916      |
+|    go    |  4  |     0      |      0.14      |      788      |      0.01       |     2824      |
+| haskell  |  4  |     0      |      0.63      |      969      |      0.01       |     3380      |
+|   rust   |  3  |     0      |      0.20      |     2557      |      0.00       |     2792      |
+| clojure  |  7  |     0      |      7.35      |     3602      |      16.95      |     95672     |
 
 ### Difference: Baseline -> Puzzle
 
-| Language |  LOC  | Complexity | Build time (s) | Exe Size (KB) | 10x Runtime (s) | Mem: RSS (KB) |
-|:--------:|:-----:|:----------:|:--------------:|:-------------:|:---------------:|:-------------:|
-| c        | 95    | 15         | 0.03           | 1             | 0.01            | 64            |
-| go       | 119   | 18         | 0.12           | 628           | 0.43            | 4748          |
-| haskell  | 66    | 6          | 0.50           | 102           | 0.45            | 632           |
-| rust     | 122   | 18         | 0.75           | 21            | 0.13            | 76            |
-| clojure  | 51    | 0          | 0.20           | 27            | 16.02           | 159568        |
+| Language | LOC | Complexity | Build time (s) | Exe Size (KB) | 10x Runtime (s) | Mem: RSS (KB) |
+| :------: | :-: | :--------: | :------------: | :-----------: | :-------------: | :-----------: |
+|    c     | 95  |     15     |      0.03      |       1       |      0.01       |      64       |
+|    go    | 119 |     18     |      0.12      |      628      |      0.43       |     4748      |
+| haskell  | 66  |     6      |      0.50      |      102      |      0.45       |      632      |
+|   rust   | 122 |     18     |      0.75      |      21       |      0.13       |      76       |
+| clojure  | 51  |     0      |      0.20      |      27       |      16.02      |    159568     |
+
+## Similar Projects
+
+|    Language    | Similarity Rating | Generalized |                                                       Link                                                        |
+| :------------: | :---------------: | :---------: | :---------------------------------------------------------------------------------------------------------------: |
+| Research Paper |       ★★★★★       |      ✓      |                   [cs.umb.edu](https://www.cs.umb.edu/~eb/sam/maccabees/backtrackingPaper.pdf)                    |
+| Research Paper |       ☆☆☆☆☆       |      ✓      |                         [users.wfu.edu](http://users.wfu.edu/masonsk/scramblesquares.pdf)                         |
+|       C#       |       ★★★☆☆       |      ✓      |    [mheironimus.blogspot.com](https://mheironimus.blogspot.com/2015/01/solving-scramble-squares-puzzles.html)     |
+|       C#       |       ★★★☆☆       |      ✓      | [codeproject.com](https://www.codeproject.com/Articles/815908/Solving-Scramble-Squares-Backtracking-Algorithm-in) |
+|      Ruby      |       ★★★★☆       |             |                        [github.com](https://github.com/mattdsteele/scramblesquares-solver)                        |
+|      Java      |       ★★☆☆☆       |      ✓      |                            [github.com](https://github.com/keilhauer/Legespiel-Solver)                            |
+|     Python     |       ★★★★★       |             |              [gist.github.com](https://gist.github.com/usrlocalben/b7070ece69f7d13bec161dbf5eb7549b)              |
+|       C        |       ★★★☆☆       |      ✓      |                         [sourceforge.net](https://sourceforge.net/projects/crazyturtle/)                          |
+|      Icon      |       ★★☆☆☆       |             |                            [ereimer.net](http://ereimer.net/programs/bird-puzzle.icn)                             |
