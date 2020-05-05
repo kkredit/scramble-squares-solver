@@ -4,7 +4,15 @@ A puzzle solving program written in a variety of languages.
 
 - [Motivation](#motivation)
 - [Solutions](#solutions)
+  - [C](#c)
+  - [Go](#go)
+  - [Haskell](#haskell)
+  - [Rust](#rust)
+  - [Clojure](#clojure)
 - [Benchmarks](#benchmarks)
+  - [Puzzle](#puzzle)
+  - [Baseline](#baseline)
+  - [Difference: Baseline -> Puzzle](#difference-baseline---puzzle)
 - [Similar Projects](#similar-projects)
 
 ## Motivation
@@ -14,11 +22,9 @@ up. I spent hours with it, and got within one piece of a solution at least ten d
 Time to write a program.
 
 The puzzle was of the "Scramble Squares" variety. You can find it
-[here](https://www.puzzlewarehouse.com/Insects-10028ss.html) and
-[here](https://www.amazon.com/B-Dazzle-10028-Scramble-Squares-Insects/dp/B000021Z0S). The idea is that each touching
-edge must have a complete insect. For example, if you have the head of a beetle on the right edge of the left piece, you
-must have the abdomen of a beetle on the left edge of the right piece. Edges on the perimeter of the puzzle do not
-matter.
+[here](https://www.scramblesquares.com/shop/nature/insects-scramble-squares/). The idea is that each touching edge must
+have a complete insect. For example, if you have the head of a beetle on the right edge of the left piece, you must have
+the abdomen of a beetle on the left edge of the right piece. Edges on the perimeter of the puzzle do not matter.
 
 Here's a picture of what it looks like unsolved:
 
@@ -187,7 +193,7 @@ themselves.
 |    Language    | Similarity Rating | Generalized |                                                       Link                                                        |
 | :------------: | :---------------: | :---------: | :---------------------------------------------------------------------------------------------------------------: |
 | Research Paper |       ★★★★★       |      ✓      |                   [cs.umb.edu](https://www.cs.umb.edu/~eb/sam/maccabees/backtrackingPaper.pdf)                    |
-| Research Paper |       ☆☆☆☆☆       |      ✓      |                         [users.wfu.edu](http://users.wfu.edu/masonsk/scramblesquares.pdf)                         |
+| Research Paper |       ★☆☆☆☆       |      ✓      |                         [users.wfu.edu](http://users.wfu.edu/masonsk/scramblesquares.pdf)                         |
 |       C#       |       ★★★☆☆       |      ✓      |    [mheironimus.blogspot.com](https://mheironimus.blogspot.com/2015/01/solving-scramble-squares-puzzles.html)     |
 |       C#       |       ★★★☆☆       |      ✓      | [codeproject.com](https://www.codeproject.com/Articles/815908/Solving-Scramble-Squares-Backtracking-Algorithm-in) |
 |      Ruby      |       ★★★★☆       |             |                        [github.com](https://github.com/mattdsteele/scramblesquares-solver)                        |
