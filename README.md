@@ -82,7 +82,7 @@ recursion. I also appreciated Haskell's strong types. They make it clear when yo
 cases, type signatures even helped me infer Haskell syntax.
 
 An interesting point about the Haskell solution is that I accidentally wound up with a breadth-first search. The
-algorithm is to map next possible states over the set of unplaced peices, filter on legal board positions, and recur. I
+algorithm is to map next possible states over the set of unplaced pieces, filter on legal board positions, and recur. I
 struggle to think of exactly how to implement a depth-first search in Haskell. Developing that algorithm would be a good
 exercise.
 
@@ -100,10 +100,10 @@ resulted in the nicest printout of any language.
 ### Clojure
 
 The Clojure solution is a direct port of the Haskell solution. I never quite grokked Clojure's REPL-oriented development
-workflow. Despite the workflow being awkard and frustrating, the final product is very nice. The algorithm is identical
+workflow. Despite the workflow being awkward and frustrating, the final product is very nice. The algorithm is identical
 to Haskell's. The data types are essentially the same, though Clojure's internal translation between collection types
 ("seqable" types) meant that I'm not sure how the data is actually stored at various parts of the program.
-Frustratingly, changing between a list and a vector can cause segementation faults (even though they all get converted
+Frustratingly, changing between a list and a vector can cause segmentation faults (even though they all get converted
 to sequences during functional operations?). Unfortunately, I did not pick up enough of the language to appreciate its
 strong macro system and concurrency features.
 
