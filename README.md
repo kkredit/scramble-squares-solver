@@ -46,22 +46,6 @@ so it finds four solutions.
 
 What follows is a few notes on what makes each solution unique.
 
-<!--
-For blog post, create new repo designed to collect solutions!
-
-- Update benchmark.sh to collect stats and name champions for each language
-  - code golf
-  - execution time
-  - memory usage
-- Maybe document all the algorithms employed
-- Accept all solutions, but require standard based on benchmark.sh expectations (e.g. make)
-- Probably standardize output so can automatically check correctness
-  - As part of established rules
-  - Probably need to make rules about libraries too. Only standard libraries? Only for printing and
-      basic data types?
-  - If competing for lines of code, must use standardized formatting tool?
--->
-
 ### C
 
 C is not the simplest language for this problem, but it is the language in which I have the most experience. Though it
