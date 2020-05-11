@@ -63,7 +63,7 @@ the head or the tail of one of four insects. Here's a picture of what it looks l
 </div>
 
 I originally wrote a solution in C when my primary motivation was solving the puzzle. During this programming languages
-deep dive, I added solutions in Clojure, Go, Haskell, and Rust. I will describe each version briefly, but you can read
+deep dive, I added solutions in Go, Haskell, Rust, and Clojure. I will describe each version briefly, but you can read
 the source code and a full writeup [here](https://github.com/kkredit/scramble-squares-solver).
 
 Each implementation uses the same high-level algorithm. Data structures represent boards as arrangements of pieces and
