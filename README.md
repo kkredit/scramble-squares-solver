@@ -2,6 +2,8 @@
 
 A puzzle solving program written in a variety of languages.
 
+>*UPDATE*: Contribute your own solution [here](https://github.com/kkredit/scramble-squares-solvers)!
+
 - [Motivation](#motivation)
 - [Solutions](#solutions)
   - [C](#c)
