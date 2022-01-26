@@ -31,7 +31,7 @@ the abdomen of a beetle on the left edge of the right piece. Edges on the perime
 Here's a picture of what it looks like unsolved:
 
 <div style="text-align:center">
-  <img src="images/puzzle.jpg" width="500">
+  <img src="images/puzzle.gif" width="500">
 </div>
 
 ## Solutions
